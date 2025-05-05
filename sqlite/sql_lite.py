@@ -25,8 +25,8 @@ class CO2:
         return self.cursor.fetchall() 
     
     # Method to insert a new row into the specified table with the count as 0
-    def insert_date(self, table_name, category, name, base_CO2):
-        self.curosr.execute(f"""INSERT INTO {table_name} (Category, Name, Count, Base_CO2)
+    def insert_data(self, table_name, category, name, base_CO2):
+        self.cursor.execute(f"""INSERT INTO {table_name} (Category, Name, Count, Base_CO2)
                             VALUES (?,?,?,?)
                             """, (category, name, 0, base_CO2))
         self.conn.commit() 
