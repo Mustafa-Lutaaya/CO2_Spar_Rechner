@@ -28,3 +28,23 @@ def root(request: Request):
         "items": items  # Passes items data to be rendered
     }
     return templates.TemplateResponse(request, "index.html", context)  # Renders the 'index.html' template with data from the context dictionary
+
+# Route to handle form submissions of incrementing & decrementing counts
+@app.post("/", response_class=HTMLResponse)
+def update_count(request: Request, action: str = Form(...), item_name: str = Form(...)): # request:Request accesses headers & cookies while the Form(...) tells FastAPI value must come from a form field
+    for category in items:
+        for item in category['items']: # Loops through each item within the current category
+            if item['name'] == item_name: # If the item's name macthes submitted form value
+                 # Updates item's count based on the action
+                if action == 'increment':
+                    item['count'] += 1 
+                elif action == 'decrement':
+                    item['count'] = max(0, item['count'] - 1)
+                
+                # Recalculates the total CO2 savings for the item using base_co2 as the fixed value and co2 as the updated total
+                item['CO2'] = item['count'] * item['base_CO2']
+                break # Stops searching once the item is found and updates it
+
+    # Redirects back to homepage after form submission to display updated data & to prevent resubission on refresh
+    return RedirectResponse(url="/", status_code=303)
+

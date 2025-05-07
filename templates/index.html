@@ -44,17 +44,23 @@
                 <h5 class="text-center"><strong>{{ category.category }}</strong></h5>
 
                 {% for item in category['items'] %}
+
+                <form method="post" class="m-0">
                 <div class="d-flex align-items-center text-danger">
                     <!-- Decrement Button -->
                     <button type="submit" name="action" value="decrement" class="btn btn-outline-danger btn-sm">-</button>
 
                     <!-- Item Name -->
                     <div class="flex-grow-1 text-center" style="white-space: nowrap;">
-                        <h6><strong>{{ item['name'] }} : {{ item['co2'] }}</strong></h6> 
+                        <h6><strong>{{ item['name'] }} : {{ item['CO2'] }}</strong></h6> 
                      </div>
+
+                    <!-- Hidden input to capture item name -->
+                    <input type="hidden" name="item_name" value="{{ item.name }}">
 
                     <!-- Increment Button -->
                     <button type="submit" name="action" value="increment" class="btn btn-outline-danger btn-sm">+</button>
+                </form>
                 </div>
                 {% endfor %}
                 {% endfor %}
@@ -67,17 +73,23 @@
                 <h5 class="text-center"><strong>{{ category.category }}</strong></h5>
 
                 {% for item in category['items'] %}
+
+                <form method="post" class="m-0">
                 <div class="d-flex align-items-center text-danger">
                     <!-- Decrement Button -->
                     <button type="submit" name="action" value="decrement" class="btn btn-outline-danger btn-sm">-</button>
 
                     <!-- Item Name -->
                     <div class="flex-grow-1 text-center" style="white-space: nowrap;">
-                        <h6><strong>{{ item['name'] }} : {{ item['co2'] }}</strong></h6> 
+                        <h6><strong>{{ item['name'] }} : {{ item['CO2'] }}</strong></h6> 
                      </div>
+                    
+                    <!-- Hidden input to capture item name -->
+                    <input type="hidden" name="item_name" value="{{ item.name }}">
 
                     <!-- Increment Button -->
                     <button type="submit" name="action" value="increment" class="btn btn-outline-danger btn-sm">+</button>
+                </form>
                 </div>
                 {% endfor %}
                 {% endfor %}
@@ -90,17 +102,23 @@
                 <h5 class="text-center"><strong>{{ category.category }}</strong></h5>
 
                 {% for item in category['items'] %}
+
+                <form method="post" class="m-0">
                 <div class="d-flex align-items-center text-danger">
                     <!-- Decrement Button -->
                     <button type="submit" name="action" value="decrement" class="btn btn-outline-danger btn-sm">-</button>
 
                     <!-- Item Name -->
                     <div class="flex-grow-1 text-center" style="white-space: nowrap;">
-                        <h6><strong>{{ item['name'] }} : {{ item['co2'] }}</strong></h6> 
+                        <h6><strong>{{ item['name'] }} : {{ item['CO2'] }}</strong></h6> 
                      </div>
+
+                    <!-- Hidden input to capture item name -->
+                    <input type="hidden" name="item_name" value="{{ item.name }}">
 
                     <!-- Increment Button -->
                     <button type="submit" name="action" value="increment" class="btn btn-outline-danger btn-sm">+</button>
+                </form>
                 </div>
                 {% endfor %}
                 {% endfor %}
