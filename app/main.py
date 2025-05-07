@@ -1,6 +1,7 @@
 # FastAPI Components to build the web app.
 from fastapi import FastAPI, Request, Form  # Imports FastAPI , Request for handling HTTP requests & Form to accept data submitted via POST Requests
 from fastapi.responses import HTMLResponse, RedirectResponse # Specifies that a route returns HTML
+from fastapi.staticfiles import StaticFiles # Serves Static Files Like CSS, JS & Images
 from fastapi.templating import Jinja2Templates  # Imports Jinja2 template support
 
 # Utilities & CO2 Connection Class
@@ -9,8 +10,10 @@ from sqlite.sql_lite import CO2
 from pathlib import Path # Provides object-oriented file system paths
 
 # Initializes FastAPI Web Application
-app = FastAPI() 
+app = FastAPI()
+app.mount("/static", StaticFiles(directory="static"), name="static") # Mounts the 'static' Files directory making it accessible via '/static' URL 
 templates = Jinja2Templates(directory=Path(__file__).parent.parent/"templates")  # Sets up Jinja2Templates for dynamic HTML rendering from templates folder
+
 
 # Database Initialization
 berechner_db = CO2("Berechner.db") # Creates an instance of  CO2 class from sqlite.sql_lite.
