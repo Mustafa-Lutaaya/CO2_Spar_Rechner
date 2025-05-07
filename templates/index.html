@@ -39,7 +39,8 @@
 
             <!-- Left Colummn -->
              <div class="col">
-                {% for category in items %}
+                {% for category in items[:2] %}
+                <br/>
                 <h5 class="text-center"><strong>{{ category.category }}</strong></h5>
 
                 {% for item in category['items'] %}
@@ -57,6 +58,89 @@
                 </div>
                 {% endfor %}
                 {% endfor %}
+             </div>
+
+            <!-- Center Colummn -->
+             <div class="col">
+                {% for category in items[2:4] %}
+                <br/>
+                <h5 class="text-center"><strong>{{ category.category }}</strong></h5>
+
+                {% for item in category['items'] %}
+                <div class="d-flex align-items-center text-danger">
+                    <!-- Decrement Button -->
+                    <button type="submit" name="action" value="decrement" class="btn btn-outline-danger btn-sm">-</button>
+
+                    <!-- Item Name -->
+                    <div class="flex-grow-1 text-center" style="white-space: nowrap;">
+                        <h6><strong>{{ item['name'] }} : {{ item['co2'] }}</strong></h6> 
+                     </div>
+
+                    <!-- Increment Button -->
+                    <button type="submit" name="action" value="increment" class="btn btn-outline-danger btn-sm">+</button>
+                </div>
+                {% endfor %}
+                {% endfor %}
+             </div>
+
+            <!-- Right Colummn -->
+             <div class="col">
+                {% for category in items[4:] %}
+                <br/>
+                <h5 class="text-center"><strong>{{ category.category }}</strong></h5>
+
+                {% for item in category['items'] %}
+                <div class="d-flex align-items-center text-danger">
+                    <!-- Decrement Button -->
+                    <button type="submit" name="action" value="decrement" class="btn btn-outline-danger btn-sm">-</button>
+
+                    <!-- Item Name -->
+                    <div class="flex-grow-1 text-center" style="white-space: nowrap;">
+                        <h6><strong>{{ item['name'] }} : {{ item['co2'] }}</strong></h6> 
+                     </div>
+
+                    <!-- Increment Button -->
+                    <button type="submit" name="action" value="increment" class="btn btn-outline-danger btn-sm">+</button>
+                </div>
+                {% endfor %}
+                {% endfor %}
+
+                <!-- Personalization -->
+                 <div class="mt-2 text-center">
+                    <br/>
+                    <h5><strong>Sie haben gespart: </strong></h5>
+                    <h6><strong>Kg CO2</strong></h6>
+                    <br/>
+                    <h6>Das ist so viel wie: </h6>
+
+                    <!-- Mean 1 -->
+                     <div class="d-felx align-items-center">
+                        <button class="btn btn-outline-danger btn-sm">🍀</button>
+                        <div class="felx-grow-1 text-center" style="white-space: nowrap;">
+                            <h6>Kms mit dem Auto</h6>
+                        </div>
+                        <button class="btn btn-outline-danger btn-sm">🍀</button>
+                     </div>
+
+                    <!-- Mean 2 -->
+                     <div class="d-felx align-items-center ">
+                        <button class="btn btn-outline-danger btn-sm">🍀</button>
+                        <div class="felx-grow-1 text-center" style="white-space: nowrap;">
+                            <h6>Kms mit dem Flugzeug</h6>
+                        </div>
+                        <button class="btn btn-outline-danger btn-sm">🍀</button>
+                     </div>
+
+                    <!-- Mean 3 -->
+                     <div class="d-felx align-items-center ">
+                        <button class="btn btn-outline-danger btn-sm">🍀</button>
+                        <div class="felx-grow-1 text-center" style="white-space: nowrap;">
+                            <h6>Kms mit dem Bus</h6>
+                        </div>
+                        <button class="btn btn-outline-danger btn-sm">🍀</button>
+                     </div>
+
+                 </div>
              </div>
 
 
