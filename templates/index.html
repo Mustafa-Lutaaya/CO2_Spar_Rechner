@@ -22,33 +22,33 @@
     <div class="container mt-5 text-center text-danger">
         <div class="row align-items-center">
             <div class="col">
-                <img id="logo" class="logo" src="/static/logo2-bg.png" alt="Logo">
+                <img id="logo" class="logo" src="/static/recolored_logobg.png" alt="Logo">
             </div>
         </div>
     </div>
 
     <!-- Title Placement -->
-    <div class="container mt-0 text-center text-danger">
+    <div class="container mt-0 text-center text-success">
         <h2><strong>CO2-Spar-Rechner</strong></h2>
     </div>
 
     <!-- Heading Placement -->
     <div class="container mt-1">
         <div class="row justify-content-center">
-            <h5 class="text-center"><strong>Getauschte Kleidungsstücke</strong></h5>
+            <h5 class="text-center text-success"><strong>Getauschte Kleidungsstücke</strong></h5>
 
             <!-- Left Colummn -->
-             <div class="col">
+             <div class="col-md-3">
                 {% for category in items[:2] %}
                 <br/>
-                <h5 class="text-center"><strong>{{ category.category }}</strong></h5>
+                <h5 class="text-center text-success"><strong>{{ category.category }}</strong></h5>
 
                 {% for item in category['items'] %}
 
                 <form method="post" class="m-0">
-                <div class="d-flex align-items-center text-danger">
+                <div class="d-flex align-items-center text-success px-1 py-0 rounded shadow-sm mb-1" style="min-width: 50%;">
                     <!-- Decrement Button -->
-                    <button type="submit" name="action" value="decrement" class="btn btn-outline-danger btn-sm">-</button>
+                    <button type="submit" name="action" value="decrement" class="btn btn-outline-success btn-sm">-</button>
 
                     <!-- Item Name -->
                     <div class="flex-grow-1 text-center" style="white-space: nowrap;">
@@ -59,7 +59,7 @@
                     <input type="hidden" name="item_name" value="{{ item.name }}">
 
                     <!-- Increment Button -->
-                    <button type="submit" name="action" value="increment" class="btn btn-outline-danger btn-sm">+</button>
+                    <button type="submit" name="action" value="increment" class="btn btn-outline-success btn-sm">+</button>
                 </form>
                 </div>
                 {% endfor %}
@@ -67,17 +67,17 @@
              </div>
 
             <!-- Center Colummn -->
-             <div class="col">
+             <div class="col-md-3">
                 {% for category in items[2:4] %}
                 <br/>
-                <h5 class="text-center"><strong>{{ category.category }}</strong></h5>
+                <h5 class="text-center text-success"><strong>{{ category.category }}</strong></h5>
 
                 {% for item in category['items'] %}
 
                 <form method="post" class="m-0">
-                <div class="d-flex align-items-center text-danger">
+                <div class="d-flex align-items-center text-success px-1 py-0 rounded shadow-sm mb-1" style="min-width: 50%;">
                     <!-- Decrement Button -->
-                    <button type="submit" name="action" value="decrement" class="btn btn-outline-danger btn-sm">-</button>
+                    <button type="submit" name="action" value="decrement" class="btn btn-outline-success btn-sm">-</button>
 
                     <!-- Item Name -->
                     <div class="flex-grow-1 text-center" style="white-space: nowrap;">
@@ -88,7 +88,7 @@
                     <input type="hidden" name="item_name" value="{{ item.name }}">
 
                     <!-- Increment Button -->
-                    <button type="submit" name="action" value="increment" class="btn btn-outline-danger btn-sm">+</button>
+                    <button type="submit" name="action" value="increment" class="btn btn-outline-success btn-sm">+</button>
                 </form>
                 </div>
                 {% endfor %}
@@ -96,17 +96,17 @@
              </div>
 
             <!-- Right Colummn -->
-             <div class="col">
+             <div class="col-md-3">
                 {% for category in items[4:] %}
                 <br/>
-                <h5 class="text-center"><strong>{{ category.category }}</strong></h5>
+                <h5 class="text-center text-success"><strong>{{ category.category }}</strong></h5>
 
                 {% for item in category['items'] %}
 
                 <form method="post" class="m-0">
-                <div class="d-flex align-items-center text-danger">
+                <div class="d-flex align-items-center text-success px-1 py-0 rounded shadow-sm mb-1 py-0" style="min-width: 50%;">
                     <!-- Decrement Button -->
-                    <button type="submit" name="action" value="decrement" class="btn btn-outline-danger btn-sm">-</button>
+                    <button type="submit" name="action" value="decrement" class="btn btn-outline-success btn-sm">-</button>
 
                     <!-- Item Name -->
                     <div class="flex-grow-1 text-center" style="white-space: nowrap;">
@@ -117,14 +117,14 @@
                     <input type="hidden" name="item_name" value="{{ item.name }}">
 
                     <!-- Increment Button -->
-                    <button type="submit" name="action" value="increment" class="btn btn-outline-danger btn-sm">+</button>
+                    <button type="submit" name="action" value="increment" class="btn btn-outline-success btn-sm">+</button>
                 </form>
                 </div>
                 {% endfor %}
                 {% endfor %}
 
                 <!-- Personalization -->
-                 <div class="mt-2 text-center">
+                 <div class="mt-2 text-center text-success">
                     <br/>
                     <h5><strong>Sie haben gespart: </strong></h5>
                     <h6><strong>Kg CO2</strong></h6>
@@ -132,38 +132,94 @@
                     <h6>Das ist so viel wie: </h6>
 
                     <!-- Mean 1 -->
-                     <div class="d-felx align-items-center">
-                        <button class="btn btn-outline-danger btn-sm">🍀</button>
-                        <div class="felx-grow-1 text-center" style="white-space: nowrap;">
+                     <div class="d-flex align-items-center">
+                        <button class="btn btn-outline-success btn-sm">🍀</button>
+                        <div class="flex-grow-1 text-center" style="white-space: nowrap;">
                             <h6>Kms mit dem Auto</h6>
                         </div>
-                        <button class="btn btn-outline-danger btn-sm">🍀</button>
+                        <button class="btn btn-outline-success btn-sm">🍀</button>
                      </div>
 
                     <!-- Mean 2 -->
-                     <div class="d-felx align-items-center ">
-                        <button class="btn btn-outline-danger btn-sm">🍀</button>
-                        <div class="felx-grow-1 text-center" style="white-space: nowrap;">
+                     <div class="d-flex align-items-center">
+                        <button class="btn btn-outline-success btn-sm">🍀</button>
+                        <div class="flex-grow-1 text-center" style="white-space: nowrap;">
                             <h6>Kms mit dem Flugzeug</h6>
                         </div>
-                        <button class="btn btn-outline-danger btn-sm">🍀</button>
+                        <button class="btn btn-outline-success btn-sm">🍀</button>
                      </div>
 
                     <!-- Mean 3 -->
-                     <div class="d-felx align-items-center ">
-                        <button class="btn btn-outline-danger btn-sm">🍀</button>
-                        <div class="felx-grow-1 text-center" style="white-space: nowrap;">
+                     <div class="d-flex align-items-center">
+                        <button class="btn btn-outline-success btn-sm">🍀</button>
+                        <div class="flex-grow-1 text-center" style="white-space: nowrap;">
                             <h6>Kms mit dem Bus</h6>
                         </div>
-                        <button class="btn btn-outline-danger btn-sm">🍀</button>
+                        <button class="btn btn-outline-success btn-sm">🍀</button>
                      </div>
-
                  </div>
              </div>
 
+             <!-- Last Colummn -->
+             <div class="col-md-3">
+                <div class="d-flex align-items-center text-success px-1 py-0 gap-2 mb-2" style="min-width: 100%;">
+                    <div class="flex-grow-1 text-center" style="white-space: nowrap;">
+                        <br/>
+                        <h5 class="text-center"><strong>GESARMTERPARNIS: Kg CO2.</strong></h5> 
+                        <h5><strong>Es ist so viel wie:</strong></h5> 
+                        <br/>
+                        <h6><strong>Km pro Resisende*r mit Auto</strong></h6> 
+                        <br/>
+                        <h6><strong>Km pro Resisende*r mit Flugzeug</strong></h6> 
+                        <br/>
+                        <h6><strong>Km pro Resisende*r mit Bus</strong></h6> 
+                     </div>
+             </div>
 
         </div>
     </div>
 
+    <!-- Carousel Addition -->
+    <div class="container d-flex justify-content-center align-items-center mt-5">
+        <div class="row">
+            <div class="col-md-12">
+
+                <div id="carousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="10000">
+                    <div class="carousel-inner">
+                        <div class="carousel-item active">
+                            <img src="/static/pair3-bg.png" class="d-block" style="width: 600px;" alt="Pair1">
+                        </div>
+                        <div class="carousel-item ">
+                            <img src="/static/pair2-bg.png" class="d-block" style="width: 600px;" alt="Pair2">
+                        </div>
+                        <div class="carousel-item ">
+                            <img src="/static/pair1-bg.png" class="d-block" style="width: 700px;" alt="Pair3">
+                        </div>
+                        <div class="carousel-item ">
+                            <img src="/static/pair4-bg.png" class="d-block" style="width: 700px;" alt="Pair4">
+                        </div>
+                        <div class="carousel-item ">
+                            <img src="/static/pair5-bg.png" class="d-block" style="width: 700px;" alt="Pair5">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Carousel Controls -->
+                <button class="carousel-control-prev" type="button" data-bs-target="#carousel" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Previous</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#carousel" data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Next</span>
+                </button>
+    
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Loads Bootstrap JS Bundle Including Popper for interactive components like modals, carousels and so on -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
