@@ -4,10 +4,16 @@ from fastapi.responses import HTMLResponse, RedirectResponse # Specifies that a 
 from fastapi.staticfiles import StaticFiles # Serves Static Files Like CSS, JS & Images
 from fastapi.templating import Jinja2Templates  # Imports Jinja2 template support
 
-# Utilities & CO2 Connection Class
+# Utilities & Database Connection Classes
+from dotenv import load_dotenv # Loads secrets from .env.
+import os# Accesses the environment variables..
 from datetime import datetime
-from sqlite.sql_lite import CO2
 from pathlib import Path # Provides object-oriented file system paths
+from sqlite.sql_lite import CO2
+from mongo.mongo import Co2
+
+# Loads enviroment variables from .env file to retrieve sensitive data securely
+load_dotenv() # Loads secrets
 
 # Initializes FastAPI Web Application
 app = FastAPI()
@@ -17,8 +23,10 @@ templates = Jinja2Templates(directory=Path(__file__).parent.parent/"templates") 
 
 # Database Initialization
 berechner_db = CO2("Berechner.db") # Creates an instance of  CO2 class from sqlite.sql_lite.
+mongo = Co2() # Initializes the earlier imported MongoDB handler class & creates an instance of the Co2 class
 table_name = "CO2_Spar" # Stores Table Name
 items = berechner_db.get_data_by_category(table_name) # Retrieves data grouped by category from table
+# mongo.insert_items({"items":items}) # Inserted Items
 
 # Route for the homepage ('/') that returns an HTML response displaying items
 @app.get("/", response_class=HTMLResponse)
