@@ -16,9 +16,10 @@ class Co2:
             
             self.client = MongoClient(uri, tlsCAFile=certifi.where())  # Initializes the MongoClient to establish a connection to MongoDB
 
-            # Accesses the database and the collections
+            # Accesses the database and the co2 & sos collections
             self.db = self.client["YoungCaritas"]
             self.co2 = self.db["co2"]
+            self.sos = self.db["sessions"] 
 
             print("Database Connected")
 
@@ -38,17 +39,29 @@ class Co2:
         # Inserts the list of dictionaries into MongoDB using insert_many
         self.co2.insert_many(grouped_items)
     
-    def update_item(self, category, item_name, count):  
+    def update_item(self, category, item_name, count, co2):  
         self.co2.update_one(
             {"category": category, "items.name": item_name}, # Filters to find the correct category & item
             {"$inc": { # $inc is used to increment/decerement the values
                 "items.$.count": count, # Increments the count by the specified value
+                "items.$.co2": co2, # Increments the co2 by the specified value
             }}
         )
     
     def get_updated_items(self):
         return list(self.co2.find())  # Returns all items (and their current counts & CO2) from the 'co2' collection
     
+    def insert_session(self, total_co2, equivalents, exc_items):
+        session = {
+            "timestamp": datetime.now(),  # Records the exact time of the exchange
+            "ingesamt": total_co2,  # Total CO2 value for this session
+            "wieauto": equivalents['wieauto'],  # Equivalent CO2 in car travel
+            "wieflugzeug": equivalents['wieflugzeug'],  # Equivalent CO2 in flight
+            "wiebus": equivalents['wiebus'],  # Equivalent CO2 in bus travel
+            "exc_items": exc_items # Exchanged Items
+        }
+        self.sos.insert_one({"session": [session]}) # Inserts the new exchange as a list inside a document into the 'xchange' collection
+
     def reset_counts(self, items):
         for category in items:
              # For each category, performs an update on the MongoDB collection
@@ -64,3 +77,11 @@ class Co2:
                     ]
                 }}
             )
+    
+    def clear_sessions(self):
+        # Deletes all documents in the 'xchange' collection
+        self.sos.delete_many({})
+    
+    def get_all_sessions(self):
+        # Returns all session documents from the collection as a list
+        return list(self.sos.find())

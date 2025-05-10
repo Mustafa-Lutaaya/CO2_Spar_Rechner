@@ -32,17 +32,28 @@ items = berechner_db.get_data_by_category(table_name) # Retrieves data grouped b
 # Route for the homepage ('/') that returns an HTML response displaying items
 @app.get("/", response_class=HTMLResponse)
 def root(request: Request):
-    total_CO2 = sum(
-        (item.get('CO2', 0))
+    global total_co2
+
+    # Calculates the total CO2 emission based on item's counts and CO2 per item
+    total_co2 = sum(
+        (item.get('co2', 0))
         for category in items
         for item in category['items'])
     
-    sessions = AppUtils.calculate_sessions(total_CO2)  # Calculates how mmuch C02 is equivalent to driving a car, riding a bus or flying in a plane using the AppUtils calculate session function
+    equivalents = AppUtils.calculate_equivalents(total_co2)  # Calculates how mmuch C02 is equivalent to driving a car, riding a bus or flying in a plane using the AppUtils calculate session function
+    totals, session_count = AppUtils.calculate_total(mongo.get_all_sessions()) # Gets All Sessions Function loops through all stored sessions in the Database, then passes them to AppUtils, calculates total function to calculate cumulative totals and number of sessions
+    updated_items = mongo.get_updated_items() # Fetches the latest items data from the MongoDB database
+    rearranged_items = AppUtils.rearrange_updated_items(updated_items)  # Single Lists MongoDB items
+    sorted_items = AppUtils.sort_updated_items(rearranged_items) # Sorts items by 'count' in descending order with most used items coming first
+
     context = {
         "request": request, # Passes the request for Jinja2 to access
         "items": items,  # Passes items data to be rendered
-        "sessions": sessions, # C02 equivalent in different modes of transport
-        "total_CO2": total_CO2, # Total C02 emitted based on selected items
+        "equivalents": equivalents, # C02 equivalent in different modes of transport
+        "total_co2": total_co2, # Total C02 emitted based on selected items
+        "totals": totals, # Cumulative totals of all sessions
+        "session_count": session_count,  # Number of sessions stored
+        "sorted_items": sorted_items # Sorted list of updated items for display
     }
     return templates.TemplateResponse(request, "index.html", context)  # Renders the 'index.html' template with data from the context dictionary
 
@@ -59,7 +70,7 @@ def update_count(request: Request, action: str = Form(...), item_name: str = For
                     item['count'] = max(0, item['count'] - 1)
                 
                 # Recalculates the total CO2 savings for the item using base_co2 as the fixed value and co2 as the updated total
-                item['CO2'] = item['count'] * item['base_CO2']
+                item['co2'] = item['count'] * item['base_CO2']
                 break # Stops searching once the item is found and updates it
 
     # Redirects back to homepage after form submission to display updated data & to prevent resubission on refresh
@@ -70,16 +81,33 @@ def update_count(request: Request, action: str = Form(...), item_name: str = For
 def renew(request: Request):
     # Saves all items data from session to database before resetting
     try:
+        exc_items = {} 
+
+        # Update items and collects exchanged items
         for category in items:
             for item in category['items']:
-                if item.get('count', 0) > 0 or item.get('CO2', 0) > 0: # Tries to get 'CO2', if it doesn't exist, it returns 0 instead , to prevent crashes
-                    mongo.update_item(category["category"], item["name"], item['count'], item['CO2']) # Updates items count and CO2 by category using the MongoCO2 class defined function
+                if item.get('count', 0) > 0 or item.get('co2', 0) > 0: # Tries to get 'CO2', if it doesn't exist, it returns 0 instead , to prevent crashes
+                    mongo.update_item(category["category"], item["name"], item['count'], item['co2']) # Updates items count and CO2 by category using the MongoCO2 class defined function
+                    
+                    # Ensures a list exists for each category
+                    if category['category'] not in exc_items:
+                        exc_items[category["category"]] = []
+                    
+                    exc_items[category["category"]].append({
+                        "name": item["name"],
+                        "count": item["count"],
+                        "co2": item["co2"]
+                    })
+
+        if total_co2 > 0:
+            equivalents = AppUtils.calculate_equivalents(total_co2)  # Calculates how much C02 is equivalent to driving a car, riding a bus or flying in a plane using the AppUtils calculate session function
+            mongo.insert_session(total_co2, equivalents, exc_items) # Inserts exchanged items and sessions for a participant
 
         # Resets locally displayed items
         for category in items:
             for item in category['items']:
                 item['count'] = 0 # Resets local count to 0
-                item['CO2'] = 0 # Resets local CO2 to 0  
+                item['co2'] = 0 # Resets local CO2 to 0  
 
     except Exception as e:
         print(f"Error in /reset: {e}")
@@ -87,9 +115,15 @@ def renew(request: Request):
     
     return RedirectResponse(url="/", status_code=303) # Redirects back to mainpage
 
-# SECURE ROUTE
-# Route to reset item counts in database zero
+# SECURE ROUTES
+# Route to reset item counts in database to zero
 @app.get("/reset_DBS", response_class=HTMLResponse)
 def reset_count(request: Request):
     mongo.reset_counts(items)
     return RedirectResponse(url="/", status_code=303) # Redirects back to homepage after resetting counts
+
+# Route to clear all exchange sessions from the database
+@app.get("/clear_SOS", response_class=HTMLResponse)
+def clear_sessions(request: Request):
+    mongo.clear_sessions() # Deletes all documents inside the sessions collection
+    return RedirectResponse(url="/", status_code=303) # Redirects back to homepage after clearing sessions
