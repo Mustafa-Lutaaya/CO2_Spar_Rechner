@@ -22,3 +22,6 @@ install:
 
 delete:
 	@rmdir /s /q venv
+
+generate:
+	@python config/keys.py

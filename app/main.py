@@ -13,6 +13,7 @@ from sqlite.sql_lite import CO2 # Imports the CO2Connection Class for sql
 from mongo.mongo import Co2 # Imports the Co2Connection Class for MongoDB
 from utilities.utils import AppUtils # Imports the data processing functions
 
+
 # Loads enviroment variables from .env file to retrieve sensitive data securely
 load_dotenv() # Loads secrets
 
@@ -29,8 +30,18 @@ table_name = "CO2_Spar" # Stores Table Name
 items = berechner_db.get_data_by_category(table_name) # Retrieves data grouped by category from sql database table
 # mongo.insert_items(items) # Inserted Items into Mongo DB
 
-# Route for the homepage ('/') that returns an HTML response displaying items
+# Route for the landingpage ('/') that returns an HTML response displaying
 @app.get("/", response_class=HTMLResponse)
+def root(request: Request):
+       
+    context = {
+        "request": request, # Passes the request for Jinja2 to access
+    }
+    return templates.TemplateResponse(request, "index.html", context)  # Renders the 'index.html' template with data from the context dictionary
+
+
+# Route for the homepage ('/main') that returns an HTML response displaying items
+@app.get("/main", response_class=HTMLResponse)
 def root(request: Request):
     global total_co2
 
@@ -55,7 +66,7 @@ def root(request: Request):
         "session_count": session_count,  # Number of sessions stored
         "sorted_items": sorted_items # Sorted list of updated items for display
     }
-    return templates.TemplateResponse(request, "index.html", context)  # Renders the 'index.html' template with data from the context dictionary
+    return templates.TemplateResponse(request, "main.html", context)  # Renders the 'index.html' template with data from the context dictionary
 
 # Route to handle form submissions of incrementing & decrementing counts
 @app.post("/", response_class=HTMLResponse)
@@ -74,7 +85,7 @@ def update_count(request: Request, action: str = Form(...), item_name: str = For
                 break # Stops searching once the item is found and updates it
 
     # Redirects back to homepage after form submission to display updated data & to prevent resubission on refresh
-    return RedirectResponse(url="/", status_code=303)
+    return RedirectResponse(url="/main", status_code=303)
 
 # Route to save items data to database and reset all items locally
 @app.post("/reset", response_class=HTMLResponse)
@@ -113,17 +124,17 @@ def renew(request: Request):
         print(f"Error in /reset: {e}")
         raise e
     
-    return RedirectResponse(url="/", status_code=303) # Redirects back to mainpage
+    return RedirectResponse(url="/main", status_code=303) # Redirects back to mainpage
 
 # SECURE ROUTES
 # Route to reset item counts in database to zero
 @app.get("/reset_DBS", response_class=HTMLResponse)
 def reset_count(request: Request):
     mongo.reset_counts(items)
-    return RedirectResponse(url="/", status_code=303) # Redirects back to homepage after resetting counts
+    return RedirectResponse(url="/main", status_code=303) # Redirects back to homepage after resetting counts
 
 # Route to clear all exchange sessions from the database
 @app.get("/clear_SOS", response_class=HTMLResponse)
 def clear_sessions(request: Request):
     mongo.clear_sessions() # Deletes all documents inside the sessions collection
-    return RedirectResponse(url="/", status_code=303) # Redirects back to homepage after clearing sessions
+    return RedirectResponse(url="/main", status_code=303) # Redirects back to homepage after clearing sessions

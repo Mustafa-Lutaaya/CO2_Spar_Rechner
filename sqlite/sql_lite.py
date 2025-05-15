@@ -55,19 +55,17 @@ class CO2:
 
         # Converts the dictinary into a list of dictionarues containing the category & its items
         items = [{"category": category, "items": items} for category, items in categories.items()]
-
         return items
     
-    # Method to delete all data from table
-    def delete_all_data(self, table_name):
-        self.cursor.execute(f"DELETE FROM {table_name}")
-        self.conn.commit()
+    # # Method to delete all data from table
+    # def delete_all_data(self, table_name):
+    #     self.cursor.execute(f"DELETE FROM {table_name}")
+    #     self.conn.commit()
 
-    
-    # Method to drop table
-    def drop_table(self, table_name):
-        self.cursor.execute(f"DROP TABLE IF EXISTS {table_name}")
-        self.conn.commit()
+    # # Method to drop table
+    # def drop_table(self, table_name):
+    #     self.cursor.execute(f"DROP TABLE IF EXISTS {table_name}")
+    #     self.conn.commit()
     
     # Method to close the database connection to commit any changes properly & save resources
     def close(self):
