@@ -1,5 +1,5 @@
 # FastAPI Components to build the web app.
-from fastapi import FastAPI, Request, Form  # Imports FastAPI , Request for handling HTTP requests & Form to accept data submitted via POST Requests
+from fastapi import FastAPI, Request, Form, HTTPException , Response # Imports FastAPI , Request for handling HTTP requests & Form to accept data submitted via POST Requests plus HTTPException & Response
 from fastapi.responses import HTMLResponse, RedirectResponse # Specifies that a route returns HTML
 from fastapi.staticfiles import StaticFiles # Serves Static Files Like CSS, JS & Images
 from fastapi.templating import Jinja2Templates  # Imports Jinja2 template support
@@ -10,9 +10,12 @@ import os# Accesses the environment variables..
 from datetime import datetime
 from pathlib import Path # Provides object-oriented file system paths
 from sqlite.sql_lite import CO2 # Imports the CO2Connection Class for sql
-from mongo.mongo import Co2 # Imports the Co2Connection Class for MongoDB
+from mongo.mongo import Co2, Register, Login # Imports the Co2Connection Class for MongoDB Together With Login & Registration Schemas
 from utilities.utils import AppUtils # Imports the data processing functions
 
+from config.jwt_handler import JWTHandler
+from config.pwd_handler import PWDHandler
+from config.mail_handler import EmailHandler
 
 # Loads enviroment variables from .env file to retrieve sensitive data securely
 load_dotenv() # Loads secrets
@@ -39,6 +42,64 @@ def root(request: Request):
     }
     return templates.TemplateResponse(request, "index.html", context)  # Renders the 'index.html' template with data from the context dictionary
 
+# Registraton Route
+@app.post("/", response_class=HTMLResponse)
+def register_user(name: str = Form(...), email: str = Form(...), action: str = Form(...)):
+    if action == 'register':
+        user = Register(name=name, email=email) # Extracts data accordingly
+        mongo.register_user(user) # Stores user data in Database
+        EmailHandler.send_to_admin(user.name, user.email) # Notifies Admin of New Registrant
+    return RedirectResponse(url="/", status_code=303) # Redirects to back to landing page
+
+# Login route to redirect to homepage
+@app.post("/login", response_class=HTMLResponse)
+def login_user(user: Login):
+    return RedirectResponse(url="/main", status_code=303) # Redirects to homepage
+
+# Approve User Route 
+@app.get("/approve_user")
+def approve_user(request: Request):
+    user = None # Sets user as none 
+
+    token = request.query_params.get("token") # Gets token from string
+    if not token:
+        raise HTTPException(status_code=400, detail="Token not provided") # Returns a 400 Bad Request error, if token is missing
+    
+    try:
+        # Decodes token and extracts email, name and action
+        payload = JWTHandler.decode_token(token)
+        email = payload["sub"] # Extracts user's email from token payload
+        name = payload["name"] # Extracts user's name
+        action = payload["action"] # Extracts action
+
+        if action != "approve":
+            raise HTTPException(status_code=403, detail="Invalid action") # Validates that the action in token is "approve"
+        
+        user = mongo.find_user_by_email(email) # Finds the user in the pending_users collection by email
+        if not user:
+            raise HTTPException(status_code=404, detail="User not found") # Raises 404 Not Found error, If no user found
+
+        password = PWDHandler.generate_password() # Generates a random password for the approved user
+        hash_pwd = PWDHandler.hash_password(password)  # Hashes the generated password before storing it
+
+        # Prepares the user document to insert into authorized_users collection
+        auth_user = {
+            "name": user["name"],
+            "email": user["email"],
+            "hash_pwd": hash_pwd,
+            "approved": datetime.utcnow()  # Timestamp of approval
+        }
+
+        mongo.authenticate_user(auth_user) # Insert the authenticated user data into the authenticated_users collection
+        mongo.delete_user_by_email(email) # Deletes user from pending collection
+
+        EmailHandler.send_to_user(name, email, password) # Notifies user of approval and provides them with login data
+
+        return Response(content="User approved successfully!", status_code=200)
+    
+    except Exception as e:
+        print(f"Error approving user: {e}")
+        raise HTTPException(status_code=400, detail=str(e)) # Catches any exception and return a 400 error with the exception message
 
 # Route for the homepage ('/main') that returns an HTML response displaying items
 @app.get("/main", response_class=HTMLResponse)

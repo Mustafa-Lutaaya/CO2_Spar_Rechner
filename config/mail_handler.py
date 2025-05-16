@@ -2,8 +2,9 @@ import os # Accesses the environment variables.
 import smtplib # Simple Mail Transfer Protocol to  send emails via an SMTP server
 from email.mime.text import MIMEText # Creates email content in either plain text or HTML format.
 from email.mime.multipart import MIMEMultipart # For Email that has multiple parts as both HTML & Attachments
-from jwt_handler import JWTHandler # Imports JWT Hanlder Class 
+from config.jwt_handler import JWTHandler # Imports JWT Hanlder Class 
 from dotenv import load_dotenv # Loads secrets from .env.
+from config.pwd_handler import PWDHandler # Imports Password Hanlder Class
 
 load_dotenv() # Loads Environment Variables from .env File
 
@@ -49,6 +50,7 @@ class EmailHandler:
         try:
             with smtplib.SMTP("smtp.gmail.com", 587) as server:  # Establishes connection to the SMTP server and send the email
                 server.starttls() # Secures connetion
+                print(EMAIL_PASSWORD)
                 server.login(SENDER_EMAIL, EMAIL_PASSWORD)
                 server.sendmail(SENDER_EMAIL, ADMIN_EMAIL, msg.as_string())
             print("Registration Email Sent")

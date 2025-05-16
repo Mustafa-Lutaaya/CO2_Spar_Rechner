@@ -3,8 +3,19 @@ import os # Accesses the environment variables..
 import certifi # Imports the certifi library which is required by Atlas in terms of secure SSL/TLS connections
 from dotenv import load_dotenv # Loads secrets from .env.
 from datetime import datetime # Imports date time Library
+from pydantic import BaseModel, EmailStr, Field # Validates request body structure using schemas
+from config.mail_handler import EmailHandler
 
 load_dotenv()
+
+# Defines Schemas using Pydantics & Fully Validates Data
+class Register(BaseModel): # Registration Schema
+    name: str = Field(min_length=2)  # Name must be at least 2 characters
+    email: EmailStr # Must be a valid email format
+
+class Login(BaseModel): # User Login Schema
+    email: EmailStr # Must be a valid email format
+    password: str # Password as a string
 
 # Mongo Class 2 Be Used to interact with the Database
 class Co2:
@@ -16,10 +27,12 @@ class Co2:
             
             self.client = MongoClient(uri, tlsCAFile=certifi.where())  # Initializes the MongoClient to establish a connection to MongoDB
 
-            # Accesses the database and the co2 & sos collections
+            # Accesses the database and the co2, sos, pending_users, authorized_users collections
             self.db = self.client["YoungCaritas"]
             self.co2 = self.db["co2"]
             self.sos = self.db["sessions"] 
+            self.pen = self.db["pending_users"]
+            self.auth = self.db["authorized_users"]
 
             print("Database Connected")
 
@@ -85,3 +98,21 @@ class Co2:
     def get_all_sessions(self):
         # Returns all session documents from the collection as a list
         return list(self.sos.find())
+    
+    def register_user(self, user:Register):
+        if user:
+            self.pen.insert_one(user.dict()) # Inserts the user data as a dictionary inside a document into the 'pending_users' collection
+            print("User Profile Pending")
+
+    def find_user_by_email(self, email: str):
+        # Searches the 'pending_users' collection for a document matching the user's email
+        user = self.pen.find_one({"email": email}) # Returns user data when found
+        return user
+    
+    def authenticate_user(self, auth_user):
+        self.auth.insert_one(auth_user) # Inserts approved user into 'authorized_users'
+    
+    def delete_user_by_email(self, email:str,):
+        result = self.pen.delete_one({"email": email})
+        return result.deleted_count # Returns 1 if deleted, 0 if not found
+                                 
