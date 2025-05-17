@@ -29,13 +29,14 @@ class EmailHandler:
         html_content = f"""
         <html>
         <body>
-        <h5>New User Registration</h5>
-        <p>Name: {name}</p>
-        <p>Email: {email}</p>
-        <p>Please Choose an action:</p>
-        <a href="{approval_url}" style="padding:10px;background-color:green;color:white;text-decoration:none;"> Allow </a>
+        <h2>New User Registration</h2>
+        <h4>Name: {name}</h4> 
+        <h4>Email: {email}</h4> 
+
+        <h4>Please Choose an action:</h4>
+        <a href="{approval_url}" style="padding:8px;background-color:green;color:white;text-decoration:none;"> Allow </a>
         &nbsp;
-        <a href="{rejection_url}" style="padding:10px;background-color:green;color:white;text-decoration:none;"> Reject </a>
+        <a href="{rejection_url}" style="padding:8px;background-color:red;color:white;text-decoration:none;"> Reject </a>
         </body>
         </html>
         """
@@ -50,7 +51,6 @@ class EmailHandler:
         try:
             with smtplib.SMTP("smtp.gmail.com", 587) as server:  # Establishes connection to the SMTP server and send the email
                 server.starttls() # Secures connetion
-                print(EMAIL_PASSWORD)
                 server.login(SENDER_EMAIL, EMAIL_PASSWORD)
                 server.sendmail(SENDER_EMAIL, ADMIN_EMAIL, msg.as_string())
             print("Registration Email Sent")

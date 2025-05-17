@@ -107,7 +107,20 @@ class Co2:
     def find_user_by_email(self, email: str):
         # Searches the 'pending_users' collection for a document matching the user's email
         user = self.pen.find_one({"email": email}) # Returns user data when found
-        return user
+        if user:
+            return user
+        else:
+            print("User Not Found")
+            return None
+            
+    def find_user_by_mail(self, email: str):
+        # Searches the 'authorized_users' collection for a document matching the user's email
+        user = self.auth.find_one({"email": email}) # Returns user data when found
+        if user:
+            return user
+        else:
+            print("User Not Found")
+            return None
     
     def authenticate_user(self, auth_user):
         self.auth.insert_one(auth_user) # Inserts approved user into 'authorized_users'

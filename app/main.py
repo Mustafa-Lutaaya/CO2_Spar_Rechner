@@ -16,6 +16,7 @@ from utilities.utils import AppUtils # Imports the data processing functions
 from config.jwt_handler import JWTHandler
 from config.pwd_handler import PWDHandler
 from config.mail_handler import EmailHandler
+from typing import Optional
 
 # Loads enviroment variables from .env file to retrieve sensitive data securely
 load_dotenv() # Loads secrets
@@ -42,24 +43,45 @@ def root(request: Request):
     }
     return templates.TemplateResponse(request, "index.html", context)  # Renders the 'index.html' template with data from the context dictionary
 
-# Registraton Route
+# Form Handling Route (Registration & Login)
 @app.post("/", response_class=HTMLResponse)
-def register_user(name: str = Form(...), email: str = Form(...), action: str = Form(...)):
+def handle_form(
+    name: Optional[str] = Form(None), 
+    email: str = Form(...), 
+    action: str = Form(...),
+    password: Optional[str] = Form(None)
+    ):
+
     if action == 'register':
+        if not name:
+            raise HTTPException(status_code=400, detail="Name is required for registration")
+        
         user = Register(name=name, email=email) # Extracts data accordingly
         mongo.register_user(user) # Stores user data in Database
         EmailHandler.send_to_admin(user.name, user.email) # Notifies Admin of New Registrant
-    return RedirectResponse(url="/", status_code=303) # Redirects to back to landing page
+        return RedirectResponse(url="/", status_code=303) # Redirects to back to landing page
 
-# Login route to redirect to homepage
-@app.post("/login", response_class=HTMLResponse)
-def login_user(user: Login):
-    return RedirectResponse(url="/main", status_code=303) # Redirects to homepage
 
-# Approve User Route 
+    elif action == 'login':
+        user = mongo.find_user_by_mail(email) # Fetch user info from Database
+        if not user:
+            raise HTTPException(status_code=401, detail="User not found or not approved")
+        
+        if not password:
+            raise HTTPException(status_code=400, detail="Password is required for login")
+        
+        hash_pwd = user.get("hash_pwd") # Gets hashed password then checks 
+        if not PWDHandler.verify_password(password, hash_pwd):
+            raise HTTPException(status_code=401, detail="Incorrect password")
+        
+        return RedirectResponse(url="/main", status_code=303) # Redirects to homepage if all checks out
+    
+    else:
+        raise HTTPException(status_code=400, detail="Invalid action")
+
+# Approval User Route 
 @app.get("/approve_user")
 def approve_user(request: Request):
-    user = None # Sets user as none 
 
     token = request.query_params.get("token") # Gets token from string
     if not token:
@@ -92,10 +114,38 @@ def approve_user(request: Request):
 
         mongo.authenticate_user(auth_user) # Insert the authenticated user data into the authenticated_users collection
         mongo.delete_user_by_email(email) # Deletes user from pending collection
-
         EmailHandler.send_to_user(name, email, password) # Notifies user of approval and provides them with login data
 
-        return Response(content="User approved successfully!", status_code=200)
+        return RedirectResponse(url="/approved", status_code=303)
+    
+    except Exception as e:
+        print(f"Error approving user: {e}")
+        raise HTTPException(status_code=400, detail=str(e)) # Catches any exception and return a 400 error with the exception message
+    
+# Rejection User Route 
+@app.get("/reject_user")
+def reject_user(request: Request):
+
+    token = request.query_params.get("token") # Gets token from string
+    if not token:
+        raise HTTPException(status_code=400, detail="Token not provided") # Returns a 400 Bad Request error, if token is missing
+    
+    try:
+        # Decodes token and extracts email, name and action
+        payload = JWTHandler.decode_token(token)
+        email = payload["sub"] # Extracts user's email from token payload
+        action = payload["action"] # Extracts action
+
+        if action != "reject":
+            raise HTTPException(status_code=403, detail="Invalid action") # Validates that the action in token is "reject"
+        
+        user = mongo.find_user_by_email(email) # Finds the user in the pending_users collection by email
+        if not user:
+            return RedirectResponse(url="/unfound", status_code=303) # Redirects to unfound page
+
+        mongo.delete_user_by_email(email) # Deletes user from pending collection
+
+        return RedirectResponse(url="/rejected", status_code=303)
     
     except Exception as e:
         print(f"Error approving user: {e}")
@@ -130,7 +180,7 @@ def root(request: Request):
     return templates.TemplateResponse(request, "main.html", context)  # Renders the 'index.html' template with data from the context dictionary
 
 # Route to handle form submissions of incrementing & decrementing counts
-@app.post("/", response_class=HTMLResponse)
+@app.post("/main", response_class=HTMLResponse)
 def update_count(request: Request, action: str = Form(...), item_name: str = Form(...)): # request:Request accesses headers & cookies while the Form(...) tells FastAPI value must come from a form field
     for category in items:
         for item in category['items']: # Loops through each item within the current category
@@ -149,7 +199,7 @@ def update_count(request: Request, action: str = Form(...), item_name: str = For
     return RedirectResponse(url="/main", status_code=303)
 
 # Route to save items data to database and reset all items locally
-@app.post("/reset", response_class=HTMLResponse)
+@app.post("/main/reset", response_class=HTMLResponse)
 def renew(request: Request):
     # Saves all items data from session to database before resetting
     try:
@@ -189,13 +239,95 @@ def renew(request: Request):
 
 # SECURE ROUTES
 # Route to reset item counts in database to zero
-@app.get("/reset_DBS", response_class=HTMLResponse)
+@app.get("/main/reset_DBS", response_class=HTMLResponse)
 def reset_count(request: Request):
     mongo.reset_counts(items)
     return RedirectResponse(url="/main", status_code=303) # Redirects back to homepage after resetting counts
 
 # Route to clear all exchange sessions from the database
-@app.get("/clear_SOS", response_class=HTMLResponse)
+@app.get("/main/clear_SOS", response_class=HTMLResponse)
 def clear_sessions(request: Request):
     mongo.clear_sessions() # Deletes all documents inside the sessions collection
     return RedirectResponse(url="/main", status_code=303) # Redirects back to homepage after clearing sessions
+
+
+# ROUTES WITH HTML CODE
+@app.get("/approved", response_class=HTMLResponse)
+def approved_page():
+    return """
+    <html>
+
+    <head>
+    <!-- Bootstrap CSS Loader For Responsive Styling & Layout -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Bootstrap CSS FOr Loading Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    </head>
+
+    <body>
+
+     <div class="alert alert-success" role="alert">
+          User approved successfully 
+        </div>
+        <p>You may now close this window.</p>
+
+
+    <!-- Loads Bootstrap JS Bundle Including Popper for interactive components like modals, carousels and so on -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    </body>
+    </html>
+    """
+
+
+@app.get("/rejected", response_class=HTMLResponse)
+def rejected_page():
+    return """
+    <html>
+
+    <head>
+    <!-- Bootstrap CSS Loader For Responsive Styling & Layout -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Bootstrap CSS FOr Loading Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    </head>
+
+    <body>
+
+     <div class="alert alert-danger" role="alert">
+          User rejected succesfully
+        </div>
+        <p>You may now close this window.</p>
+
+
+    <!-- Loads Bootstrap JS Bundle Including Popper for interactive components like modals, carousels and so on -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    </body>
+    </html>
+    """
+
+@app.get("/unfound", response_class=HTMLResponse)
+def unfound_page():
+    return """
+    <html>
+
+    <head>
+    <!-- Bootstrap CSS Loader For Responsive Styling & Layout -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Bootstrap CSS FOr Loading Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    </head>
+
+    <body>
+
+
+    <!-- Loads Bootstrap JS Bundle Including Popper for interactive components like modals, carousels and so on -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    </body>
+    </html>
+    """
