@@ -36,10 +36,26 @@ items = berechner_db.get_data_by_category(table_name) # Retrieves data grouped b
 
 # Route for the landingpage ('/') that returns an HTML response displaying
 @app.get("/", response_class=HTMLResponse)
-def root(request: Request):
-       
+def root(request: Request, error: str = None ):
+    # Initializes variable to store alert message
+    alert = None
+
+    # Checks if an error code was passed and returns an alert message
+    if error == "missing_name":
+        alert = "Name is required for registration."
+    elif error == "user_not_found":
+        alert = "User not found or not approved."
+    elif error == "missing_password":
+        alert = "Password is required for login."
+    elif error == "incorrect_password":
+        alert = "Incorrect password."
+    elif error == "invalid_action":
+        alert = "Invalid action."
+
+    
     context = {
         "request": request, # Passes the request for Jinja2 to access
+        "alert": alert # Adds alert to context so it's accessible in the HTML template
     }
     return templates.TemplateResponse(request, "index.html", context)  # Renders the 'index.html' template with data from the context dictionary
 
@@ -51,33 +67,35 @@ def handle_form(
     action: str = Form(...),
     password: Optional[str] = Form(None)
     ):
-
+    
+    # Handles registration form submission
     if action == 'register':
         if not name:
-            raise HTTPException(status_code=400, detail="Name is required for registration")
+            return RedirectResponse(url="/?error=missing_name", status_code=303) # RedirectS with error code in URL, if name is missing 
         
+        # Proceeds with registration
         user = Register(name=name, email=email) # Extracts data accordingly
         mongo.register_user(user) # Stores user data in Database
         EmailHandler.send_to_admin(user.name, user.email) # Notifies Admin of New Registrant
         return RedirectResponse(url="/", status_code=303) # Redirects to back to landing page
-
-
+    
+    # Handles login form submission
     elif action == 'login':
         user = mongo.find_user_by_mail(email) # Fetch user info from Database
         if not user:
-            raise HTTPException(status_code=401, detail="User not found or not approved")
+            return RedirectResponse(url="/?error=user_not_found", status_code=303) # Redirects with error code in URL, if user not found
         
         if not password:
-            raise HTTPException(status_code=400, detail="Password is required for login")
+            return RedirectResponse(url="/?error=missing_password", status_code=303) # Redirects with error code in URL, if password is missing
         
-        hash_pwd = user.get("hash_pwd") # Gets hashed password then checks 
+        hash_pwd = user.get("hash_pwd") # Gets hashed password then checks it for verficiation
         if not PWDHandler.verify_password(password, hash_pwd):
-            raise HTTPException(status_code=401, detail="Incorrect password")
+            return RedirectResponse(url="/?error=incorrect_password", status_code=303)
         
         return RedirectResponse(url="/main", status_code=303) # Redirects to homepage if all checks out
     
     else:
-        raise HTTPException(status_code=400, detail="Invalid action")
+        return RedirectResponse(url="/?error=invalid_action", status_code=303)  # Handles unknown form action
 
 # Approval User Route 
 @app.get("/approve_user")
@@ -85,7 +103,7 @@ def approve_user(request: Request):
 
     token = request.query_params.get("token") # Gets token from string
     if not token:
-        raise HTTPException(status_code=400, detail="Token not provided") # Returns a 400 Bad Request error, if token is missing
+        return RedirectResponse(url="/invalid_token", status_code=303)  # Redirects to invalid token page & if empty or missing
     
     try:
         # Decodes token and extracts email, name and action
@@ -94,12 +112,9 @@ def approve_user(request: Request):
         name = payload["name"] # Extracts user's name
         action = payload["action"] # Extracts action
 
-        if action != "approve":
-            raise HTTPException(status_code=403, detail="Invalid action") # Validates that the action in token is "approve"
-        
         user = mongo.find_user_by_email(email) # Finds the user in the pending_users collection by email
         if not user:
-            raise HTTPException(status_code=404, detail="User not found") # Raises 404 Not Found error, If no user found
+            return RedirectResponse(url="/unfound", status_code=303) # Redirects to unfound page
 
         password = PWDHandler.generate_password() # Generates a random password for the approved user
         hash_pwd = PWDHandler.hash_password(password)  # Hashes the generated password before storing it
@@ -116,19 +131,19 @@ def approve_user(request: Request):
         mongo.delete_user_by_email(email) # Deletes user from pending collection
         EmailHandler.send_to_user(name, email, password) # Notifies user of approval and provides them with login data
 
-        return RedirectResponse(url="/approved", status_code=303)
+        return RedirectResponse(url="/approved", status_code=303) # Redirects to approved page
     
     except Exception as e:
         print(f"Error approving user: {e}")
-        raise HTTPException(status_code=400, detail=str(e)) # Catches any exception and return a 400 error with the exception message
+        return RedirectResponse(url="/invalid_token", status_code=303) # Redirects to invalid token page if token is expired or invalid
     
 # Rejection User Route 
 @app.get("/reject_user")
 def reject_user(request: Request):
 
-    token = request.query_params.get("token") # Gets token from string
+    token = request.query_params.get("token") # Gets token from string 
     if not token:
-        raise HTTPException(status_code=400, detail="Token not provided") # Returns a 400 Bad Request error, if token is missing
+        return RedirectResponse(url="/invalid_token", status_code=303)  # Redirects to invalid token page & if empty or missing
     
     try:
         # Decodes token and extracts email, name and action
@@ -136,20 +151,18 @@ def reject_user(request: Request):
         email = payload["sub"] # Extracts user's email from token payload
         action = payload["action"] # Extracts action
 
-        if action != "reject":
-            raise HTTPException(status_code=403, detail="Invalid action") # Validates that the action in token is "reject"
-        
+
         user = mongo.find_user_by_email(email) # Finds the user in the pending_users collection by email
         if not user:
             return RedirectResponse(url="/unfound", status_code=303) # Redirects to unfound page
 
         mongo.delete_user_by_email(email) # Deletes user from pending collection
 
-        return RedirectResponse(url="/rejected", status_code=303)
+        return RedirectResponse(url="/rejected", status_code=303) # Redirects to rejected page
     
     except Exception as e:
         print(f"Error approving user: {e}")
-        raise HTTPException(status_code=400, detail=str(e)) # Catches any exception and return a 400 error with the exception message
+        return RedirectResponse(url="/invalid_token", status_code=303) # Redirects to invalid token page if token is expired or invalid
 
 # Route for the homepage ('/main') that returns an HTML response displaying items
 @app.get("/main", response_class=HTMLResponse)
@@ -255,55 +268,128 @@ def clear_sessions(request: Request):
 @app.get("/approved", response_class=HTMLResponse)
 def approved_page():
     return """
-    <html>
-
+    <html lang="en">
     <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Approved</title>
+
     <!-- Bootstrap CSS Loader For Responsive Styling & Layout -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
     <!-- Bootstrap CSS FOr Loading Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- Custom CSS File in 'static' Folder -->
+    <link rel="stylesheet" href="/static/styles.css">
+
+    <!-- Site Favicon Displayed In The Browser Tab -->
+    <link href="/static/favicon.png" rel="icon">
     </head>
 
     <body>
-
-     <div class="alert alert-success" role="alert">
-          User approved successfully 
+    <div class="container mt-5 text-center text-danger">
+        <div class="row align-items-center">
+            <div class="col">
+                <img id="logo" class="WLogo" src="/static/logo1.png" alt="Logo">
+            </div>
         </div>
-        <p>You may now close this window.</p>
+    </div>
+
+    <div class="container mt-5 text-center">
+        <div class="row align-items-center">
+            <div class="col">
+            </div>
+        </div>
+    </div>
+
+    <div class="container mt-5 text-center">
+        <div class="row align-items-center">
+            <div class="col">
+            </div>
+        </div>
+    </div>
 
 
-    <!-- Loads Bootstrap JS Bundle Including Popper for interactive components like modals, carousels and so on -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Message Placement -->
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <h4 class="text-center"><strong>youngcaritas x Kleidertausch CO₂-Rechner</strong></h4>
+                <br/>
+                <div class="alert alert-success text-center" role="alert">
+                <h6>User approved successfully</h6>
+                </div>
+                <h6 class="text-center"><strong>You may now close this window.</strong></h6>
+            </div>
+        </div>
+    </div>
 
-    </body>
-    </html>
+</body>
+</html>
     """
 
 
 @app.get("/rejected", response_class=HTMLResponse)
 def rejected_page():
     return """
-    <html>
-
+   <html lang="en">
     <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Rejected</title>
+
     <!-- Bootstrap CSS Loader For Responsive Styling & Layout -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
     <!-- Bootstrap CSS FOr Loading Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- Custom CSS File in 'static' Folder -->
+    <link rel="stylesheet" href="/static/styles.css">
+
+    <!-- Site Favicon Displayed In The Browser Tab -->
+    <link href="/static/favicon.png" rel="icon">
     </head>
 
     <body>
-
-     <div class="alert alert-danger" role="alert">
-          User rejected succesfully
+    <div class="container mt-5 text-center text-danger">
+        <div class="row align-items-center">
+            <div class="col">
+                <img id="logo" class="WLogo" src="/static/logo1.png" alt="Logo">
+            </div>
         </div>
-        <p>You may now close this window.</p>
+    </div>
 
 
-    <!-- Loads Bootstrap JS Bundle Including Popper for interactive components like modals, carousels and so on -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <div class="container mt-5 text-center">
+        <div class="row align-items-center">
+            <div class="col">
+            </div>
+        </div>
+    </div>
+
+    <div class="container mt-5 text-center">
+        <div class="row align-items-center">
+            <div class="col">
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Message Placement -->
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <h4 class="text-center"><strong>youngcaritas x Kleidertausch CO₂-Rechner</strong></h4>
+                <br/>
+                <div class="alert alert-success text-center" role="alert">
+                <h6>User rejected successfully</h6>
+                </div>
+                <h6 class="text-center">You may now close this window.</h6>
+            </div>
+        </div>
+    </div>
 
     </body>
     </html>
@@ -312,22 +398,118 @@ def rejected_page():
 @app.get("/unfound", response_class=HTMLResponse)
 def unfound_page():
     return """
-    <html>
-
+    <html lang="en">
     <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Not Found</title>
+
     <!-- Bootstrap CSS Loader For Responsive Styling & Layout -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
     <!-- Bootstrap CSS FOr Loading Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- Custom CSS File in 'static' Folder -->
+    <link rel="stylesheet" href="/static/styles.css">
+
+    <!-- Site Favicon Displayed In The Browser Tab -->
+    <link href="/static/favicon.png" rel="icon">
     </head>
 
     <body>
+    <div class="container mt-5 text-center text-danger">
+        <div class="row align-items-center">
+            <div class="col">
+                <img id="logo" class="WLogo" src="/static/logo1.png" alt="Logo">
+            </div>
+        </div>
+    </div>
+
+    
+    <div class="container mt-5 text-center">
+        <div class="row align-items-center">
+            <div class="col">
+            </div>
+        </div>
+    </div>
+    
+    <div class="container mt-5 text-center">
+        <div class="row align-items-center">
+            <div class="col">
+            </div>
+        </div>
+    </div>
 
 
-    <!-- Loads Bootstrap JS Bundle Including Popper for interactive components like modals, carousels and so on -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
+    <!-- Message Placement -->
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <h4 class="text-center"><strong>youngcaritas x Kleidertausch CO₂-Rechner</strong></h4>
+                <br/>
+                <div class="alert alert-danger text-center" role="alert">
+                <h6>User not found</h6>
+                </div>
+                <h6 class="text-center"><strong>You may now close this window.</strong></h6>
+            </div>
+        </div>
+    </div>
+
+    </body>
+    </html>
+    """
+
+@app.get("/invalid_token", response_class=HTMLResponse)
+def invalid_token_page():
+    return """
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Invalid Token</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+        <link rel="stylesheet" href="/static/styles.css">
+        <link href="/static/favicon.png" rel="icon">
+    </head>
+    <body>
+        <div class="container mt-5 text-center text-danger">
+            <div class="row align-items-center">
+                <div class="col">
+                    <img id="logo" class="WLogo" src="/static/logo1.png" alt="Logo">
+                </div>
+            </div>
+        </div>
+        
+        
+        <div class="container mt-5 text-center">
+            <div class="row align-items-center">
+                <div class="col">
+                </div>
+            </div>
+        </div>
+
+        <div class="container mt-5 text-center">
+            <div class="row align-items-center">
+                <div class="col">
+                </div>
+            </div>
+        </div>
+
+        <div class="container mt-5">
+            <div class="row justify-content-center">
+                <div class="col-md-6">
+                    <h4 class="text-center"><strong>youngcaritas x Kleidertausch CO₂-Rechner</strong></h4>
+                    <br/>
+                    <div class="alert alert-danger text-center" role="alert">
+                        <h6>Invalid or expired token</h6>
+                    </div>
+                    <h6 class="text-center">Please restart the registration process or close this window.</h6>
+                </div>
+            </div>
+        </div>
     </body>
     </html>
     """

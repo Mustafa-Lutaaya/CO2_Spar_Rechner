@@ -6,6 +6,7 @@ body{
     max-width: 200px;
 }
 
-.landing_page{
-
+.WLogo{
+    max-width: 280px;
+    border-radius: 10%;
 }
