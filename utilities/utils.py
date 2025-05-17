@@ -44,4 +44,9 @@ class AppUtils:
                 totals["wieflugzeug"] += session.get("wieflugzeug", 0)
                 totals["wiebus"] += session.get("wiebus", 0)
                 session_count += 1 # Each time the for loop finds a doc, the session count is increased by 1
+
+        # Rounds off all totals to 2 decimal places before returning
+        for key in totals:
+            totals[key] = round(totals[key], 2)
+
         return totals, session_count

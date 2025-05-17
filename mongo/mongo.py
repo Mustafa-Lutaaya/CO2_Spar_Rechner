@@ -67,10 +67,10 @@ class Co2:
     def insert_session(self, total_co2, equivalents, exc_items):
         session = {
             "timestamp": datetime.now(),  # Records the exact time of the exchange
-            "ingesamt": total_co2,  # Total CO2 value for this session
-            "wieauto": equivalents['wieauto'],  # Equivalent CO2 in car travel
-            "wieflugzeug": equivalents['wieflugzeug'],  # Equivalent CO2 in flight
-            "wiebus": equivalents['wiebus'],  # Equivalent CO2 in bus travel
+            "ingesamt": round(total_co2, 2),  # Total CO2 value for this session
+            "wieauto": round(equivalents['wieauto'], 2),  # Equivalent CO2 in car travel
+            "wieflugzeug": round(equivalents['wieflugzeug'], 2),  # Equivalent CO2 in flight
+            "wiebus": round(equivalents['wiebus'], 2),  # Equivalent CO2 in bus travel
             "exc_items": exc_items # Exchanged Items
         }
         self.sos.insert_one({"session": [session]}) # Inserts the new exchange as a list inside a document into the 'xchange' collection
