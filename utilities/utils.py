@@ -9,9 +9,9 @@ class AppUtils:
     @staticmethod
     def calculate_equivalents(total_co2):  # Calculates CO2 equivalents for different modes of transport
         return{
-            "wieauto": round(total_co2 / 0.2, 2), # 0.2Kg CO2 per Km
-            "wieflugzeug": round(total_co2 / 0.2, 2), # 0.2Kg CO2 per Km
-            "wiebus": round(total_co2 / 0.05, 2) # 0.05Kg CO2 per Km
+            "wieauto": round(total_co2 / (170.65 / 1000), 2), # 0.2Kg CO2 per Km
+            "wieflugzeug": round(total_co2 / (181.59 / 1000), 2), # 0.2Kg CO2 per Km
+            "wiebus": round(total_co2 /(27.33 / 1000), 2) # 0.05Kg CO2 per Km
         }
     
     @staticmethod
@@ -26,6 +26,13 @@ class AppUtils:
                     "name": item['name'],
                     "count":item['count'],
                     "co2": item["co2"]
+                })
+            else:
+                print(f"Warning: Missing 'co2' in item: {item}")
+                rearranged.append({
+                    "name": item.get('name', 'Unknown'),
+                    "count": item.get('count', 0),
+                    "co2": 0  # Default to 0 if missing
                 })
         return rearranged # Returns final list
     

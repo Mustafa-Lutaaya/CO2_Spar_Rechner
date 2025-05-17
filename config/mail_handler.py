@@ -74,7 +74,7 @@ class EmailHandler:
         <li>Code: {password}</li>
         </ul>
         <p>
-        <a href="http://127.0.0.1:8000/login" style="padding:10px;background-color:blue;color:white;text-decoration:none;">
+        <a href="http://127.0.0.1:8000/" style="padding:10px;background-color:blue;color:white;text-decoration:none;">
         Login Now</a>
         </p>
         </body>
