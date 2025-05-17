@@ -25,14 +25,7 @@ class AppUtils:
                 rearranged.append({
                     "name": item['name'],
                     "count":item['count'],
-                    "co2": item["co2"]
-                })
-            else:
-                print(f"Warning: Missing 'co2' in item: {item}")
-                rearranged.append({
-                    "name": item.get('name', 'Unknown'),
-                    "count": item.get('count', 0),
-                    "co2": 0  # Default to 0 if missing
+                    "co2": item.get("co2",0)
                 })
         return rearranged # Returns final list
     
