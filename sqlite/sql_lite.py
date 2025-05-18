@@ -1,7 +1,7 @@
 # sqlite3 Module interacts with SQLite Databases
 import sqlite3
 
-# Class to manage the database connection
+# Class to manage the overall database connection
 class CO2:
     def __init__(self, db_path):
         self.conn = sqlite3.connect(db_path)
@@ -57,10 +57,10 @@ class CO2:
         items = [{"category": category, "items": items} for category, items in categories.items()]
         return items
     
-    # # Method to delete all data from table
-    # def delete_all_data(self, table_name):
-    #     self.cursor.execute(f"DELETE FROM {table_name}")
-    #     self.conn.commit()
+    #  Method to delete all data from table
+    def delete_all_data(self, table_name):
+        self.cursor.execute(f"DELETE FROM {table_name}")
+        self.conn.commit()
 
     # # Method to drop table
     # def drop_table(self, table_name):
@@ -70,3 +70,4 @@ class CO2:
     # Method to close the database connection to commit any changes properly & save resources
     def close(self):
         self.conn.close()  
+    

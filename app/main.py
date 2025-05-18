@@ -39,7 +39,7 @@ if mongo.co2.count_documents({}) == 0:
 
 # Route for the landingpage ('/') that returns an HTML response displaying
 @app.get("/", response_class=HTMLResponse)
-def root(request: Request, error: str = None ):
+def root(request: Request, error: str = None,):
     # Initializes variable to store alert message
     alert = None
 
@@ -62,12 +62,12 @@ def root(request: Request, error: str = None ):
     return templates.TemplateResponse(request, "index.html", context)  # Renders the 'index.html' template with data from the context dictionary
 
 # Form Handling Route (Registration & Login)
-@app.post("/", response_class=HTMLResponse)
+@app.post("/", response_class=HTMLResponse, )
 def handle_form(
     name: Optional[str] = Form(None), 
     email: str = Form(...), 
     action: str = Form(...),
-    password: Optional[str] = Form(None)
+    password: Optional[str] = Form(None),
     ):
     
     # Handles registration form submission
@@ -94,7 +94,17 @@ def handle_form(
         if not PWDHandler.verify_password(password, hash_pwd):
             return RedirectResponse(url="/?error=incorrect_password", status_code=303)
         
-        return RedirectResponse(url="/main", status_code=303) # Redirects to homepage if all checks out
+        # Sets cookie with user_name
+        response = RedirectResponse(url="/main", status_code=303) # Redirects to homepage if all checks out
+        response.set_cookie(key="user_name", # Cookie key used to identify user session
+                            value=user.get("name"),  # Store the user's name as the value
+                            max_age=1800, # Cookie expires in 30 minutes
+                            httponly=True, # Cookie cant be accesed by JS and protects from XSS .. Cross-Site Scripting attacks
+                            samesite="lax", # Prevents Cross-Site Request Forgery (CSRF) attacks where bad sites try to trick the browser into making unwanted requests with the cookie.
+                            secure=True # Cookie is never sent over unencrpted HTTP 
+                            )
+        response.set_cookie(key="welcome_message", value=f"Welcome {user.get('name')}!", max_age=1) # Sets cookie to display short-lived welcome message
+        return response
     
     else:
         return RedirectResponse(url="/?error=invalid_action", status_code=303)  # Handles unknown form action
@@ -168,7 +178,12 @@ def reject_user(request: Request):
 
 # Route for the homepage ('/main') that returns an HTML response displaying items
 @app.get("/main", response_class=HTMLResponse)
-def root(request: Request):
+def main(request: Request):
+
+    # Personalized welcome text initialization
+    user_name = request.cookies.get("user_name")
+    welcome_message = request.cookies.get("welcome_message")
+
     global total_co2
 
     # Calculates the total CO2 emission based on item's counts and CO2 per item
@@ -190,9 +205,16 @@ def root(request: Request):
         "total_co2": total_co2, # Total C02 emitted based on selected items
         "totals": totals, # Cumulative totals of all sessions
         "session_count": session_count,  # Number of sessions stored
-        "sorted_items": sorted_items # Sorted list of updated items for display
+        "sorted_items": sorted_items, # Sorted list of updated items for display
+        "welcome_message": welcome_message # Displays welcome text
     }
-    return templates.TemplateResponse(request, "main.html", context)  # Renders the 'index.html' template with data from the context dictionary
+    # Renders the response
+    response = templates.TemplateResponse("main.html", context)
+
+    # Clears welcome text after first display
+    if welcome_message:
+        response.delete_cookie("welcome_message")
+    return response 
 
 # Route to handle form submissions of incrementing & decrementing counts
 @app.post("/main", response_class=HTMLResponse)
@@ -252,6 +274,29 @@ def renew(request: Request):
     
     return RedirectResponse(url="/main", status_code=303) # Redirects back to mainpage
 
+# Route to save events data to database and reset all items locally
+@app.post("/main/logout", response_class=HTMLResponse)
+def logout(request: Request):
+
+    user_name = request.cookies.get("user_name") # Uses cookie to get user name
+
+    # Checks if there were actual calculations during sessions
+    totals, session_count = AppUtils.calculate_total(mongo.get_all_sessions()) # Gets All Sessions Function loops through all stored sessions in the Database, then passes them to AppUtils, calculates total function to calculate cumulative totals and number of sessions
+
+    # If data was exchanged during the event, then its collected and saved into the logs event collection
+    if session_count > 0:
+        updated_items = mongo.get_updated_items() # Fetches the latest items data from the MongoDB database
+        rearranged_items = AppUtils.rearrange_updated_items(updated_items)  # Single Lists MongoDB items
+        sorted_items = AppUtils.sort_updated_items(rearranged_items) # Sorts items by 'count' in descending order with most used items coming first
+        mongo.log_out(user_name, sessions=session_count, sorted_items=sorted_items, total=totals)
+        mongo.reset_counts(items) # Resets items database count 
+        mongo.clear_sessions() # Deletes all documents inside the sessions collection
+
+    # Prepares redirect response and clears the cookie
+    response = RedirectResponse(url="/", status_code=303) 
+    response.delete_cookie("user_name") # Clears cookie
+    return response # Redirects to landing page 
+    
 # SECURE ROUTES
 # Route to reset item counts in database to zero
 @app.get("/main/reset_DBS", response_class=HTMLResponse)

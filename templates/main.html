@@ -19,6 +19,23 @@
 
 </head>
 <body>
+
+    <!-- Welcome Message Display -->
+    {% if welcome_message %}
+    <div class="alert alert-success" role="alert">
+        {{ welcome_message }}
+    </div>
+    {% endif %}
+
+
+    <!-- Logout Button -->
+    <div class="container mt-3">
+        <form action="/main/logout" method="post" class="d-flex justify-content-end">
+            <button type="submit" class="btn btn-outline-success btn-sm text-black">Logout</button>
+        </form>
+    </div>
+
+    <!-- Logo Placement -->
     <div class="container mt-5 text-center text-danger">
         <div class="row align-items-center">
             <div class="col">
@@ -125,7 +142,7 @@
                 {% endfor %}
 
                 <!-- Personalization -->
-                 <div class="mt-2 text-center text-success">
+                 <div class="mt-1 text-center text-success">
                     <br/>
                     <h5><strong>Du hast gespart: </strong></h5>
                     <h6><strong>{{ total_co2 }} kg CO₂</strong></h6>
@@ -163,33 +180,36 @@
                     <div class="d-flex align-items-center mb-2">
                     <div class="flex-grow-1 text-center " style="white-space: nowrap;">
                         <form action="/main/reset" method="post" class="d-flex justify-content-center">
-                            <button type="submit" class="btn btn-outline-success btn-sm text-success">sparen</button>
+                            <button type="submit" class="btn btn-outline-success btn-sm text-black">Sparen</button>
                         </form>
                     </div>
                     </div>   
 
                  </div>
              </div>
+            
+            
+            
 
             <!-- Last Colummn -->
             <div class="col-md-3">
                 <div class="d-flex align-items-center text-success" style="min-width: 80%;">
                     <div class="flex-grow-1 text-center" style="white-space: nowrap;">
                         <br/>
-                        <h5 class="text-center"><strong>GESAMTERSPARNIS: {{ totals.ingesamt }} kg CO₂.</strong></h5> 
-                        <h5><strong>Das ist so viel wie:</strong></h5> 
+                        <h5 class="text-center"><strong>GESAMTERSPARNIS:</strong></h5> 
+                        <h6><strong>{{ totals.ingesamt }} kg CO₂.</strong></h6> 
+                        <h6><strong>Das ist so viel wie:</strong></h6> 
                      
                         <h6><strong>{{ totals.wieauto }}</strong> km pro Reisende*r mit Auto</h6> 
-                        <br/>
+
                         <h6><strong>{{ totals.wieflugzeug }}</strong> km pro Reisende*r mit Flugzeug</h6> 
-                        <br/>
                         <h6><strong>{{ totals.wiebus }}</strong> km pro Reisende*r mit Bus</h6> 
                     </div>
                 </div>
 
 
 
-                <div class="container mt-3 text-center">
+                <div class="container mt-2 text-center">
                     <div class="row">
                         <div class="col">
                             <br/>
@@ -205,7 +225,7 @@
                         {% endfor %}
 
                         <!-- Items Button- Modal -->
-                        <button type="button" class="btn btn-outline-success btn-sm mt-2 text-success" data-bs-toggle="modal" data-bs-target="#myModal">
+                        <button type="button" class="btn btn-outline-success btn-sm mt-2 text-black" data-bs-toggle="modal" data-bs-target="#myModal">
                             Mehr
                         </button>
                         </div>

@@ -27,12 +27,13 @@ class Co2:
             
             self.client = MongoClient(uri, tlsCAFile=certifi.where())  # Initializes the MongoClient to establish a connection to MongoDB
 
-            # Accesses the database and the co2, sos, pending_users, authorized_users collections
+            # Accesses the database and the co2, sos, pending_users, authorized_users collections plus Event Logs after sign out
             self.db = self.client["YoungCaritas"]
             self.co2 = self.db["co2"]
             self.sos = self.db["sessions"] 
             self.pen = self.db["pending_users"]
             self.auth = self.db["authorized_users"]
+            self.logs = self.db["Event_Logs"]
 
             print("Database Connected")
 
@@ -73,7 +74,7 @@ class Co2:
             "wiebus": round(equivalents['wiebus'], 2),  # Equivalent CO2 in bus travel
             "exc_items": exc_items # Exchanged Items
         }
-        self.sos.insert_one({"session": [session]}) # Inserts the new exchange as a list inside a document into the 'xchange' collection
+        self.sos.insert_one({"session": [session]}) # Inserts the new exchange as a list inside a document into the 'Session' collection
 
     def reset_counts(self, items):
         for category in items:
@@ -128,4 +129,13 @@ class Co2:
     def delete_user_by_email(self, email:str,):
         result = self.pen.delete_one({"email": email})
         return result.deleted_count # Returns 1 if deleted, 0 if not found
-                                 
+    
+    def log_out(self, user, sessions, sorted_items, total):
+        logs = {
+            "timestamp": datetime.now(),  # Records the exact time of logout
+            "user_name": user, # Adds user name
+            "sessions": sessions, # Adds number of sessions
+            "sorted_items": sorted_items, # Adds sorted items
+            "total": total # Adds total as well
+        }
+        self.logs.insert_one({"Logs": [logs]}) # Inserts the events logs as a list inside a document into the 'Event_Logs' collection                 
