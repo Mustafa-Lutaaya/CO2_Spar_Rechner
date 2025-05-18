@@ -32,7 +32,10 @@ berechner_db = CO2("Berechner.db") # Creates an instance of  CO2 class from sqli
 mongo = Co2() # Initializes the earlier imported MongoDB handler class & creates an instance of the Co2 class
 table_name = "CO2_Spar" # Stores Table Name
 items = berechner_db.get_data_by_category(table_name) # Retrieves data grouped by category from sql database table
-# mongo.insert_items(items) # Inserted Items into Mongo DB
+
+# Inserts Items into Mongo DB co2 Database if documents empty
+if mongo.co2.count_documents({}) == 0:
+    mongo.insert_items(items) 
 
 # Route for the landingpage ('/') that returns an HTML response displaying
 @app.get("/", response_class=HTMLResponse)
@@ -52,7 +55,6 @@ def root(request: Request, error: str = None ):
     elif error == "invalid_action":
         alert = "Invalid action."
 
-    
     context = {
         "request": request, # Passes the request for Jinja2 to access
         "alert": alert # Adds alert to context so it's accessible in the HTML template
