@@ -23,7 +23,7 @@ class Co2:
         try:
             uri = os.getenv("uri") # Loads the MongoDB URI (connection string) from environment variables
             if not uri:
-                raise ValueError("MongoDB URI not found in environment variables.")
+                raise EnvironmentError("MongoDB URI not found in environment variables.")
             
             self.client = MongoClient(uri, tlsCAFile=certifi.where())  # Initializes the MongoClient to establish a connection to MongoDB
 

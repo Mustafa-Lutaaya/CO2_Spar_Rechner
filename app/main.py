@@ -37,8 +37,60 @@ items = berechner_db.get_data_by_category(table_name) # Retrieves data grouped b
 if mongo.co2.count_documents({}) == 0:
     mongo.insert_items(items) 
 
-# Route for the landingpage ('/') that returns an HTML response displaying
+# DEMP PAGE ROUTES
+# Route for the demopage ('/') that returns an HTML response displaying items
 @app.get("/", response_class=HTMLResponse)
+def demo(request: Request):
+
+    # Calculates the total CO2 emission based on item's counts and CO2 per item
+    total_co2 = sum(
+        (item.get('co2', 0))
+        for category in items
+        for item in category['items'])
+    
+    equivalents = AppUtils.calculate_equivalents(total_co2)  # Calculates how mmuch C02 is equivalent to driving a car, riding a bus or flying in a plane using the AppUtils calculate session function
+
+    context = {
+        "request": request, # Passes the request for Jinja2 to access
+        "items": items,  # Passes items data to be rendered
+        "equivalents": equivalents, # C02 equivalent in different modes of transport
+        "total_co2": total_co2, # Total C02 emitted based on selected items
+    }
+    # Renders the response
+    response = templates.TemplateResponse("demo.html", context)
+    return response 
+
+# Route to handle form submissions of incrementing & decrementing counts on demo page
+@app.post("/", response_class=HTMLResponse)
+def update_count(request: Request, action: str = Form(...), item_name: str = Form(...)): # request:Request accesses headers & cookies while the Form(...) tells FastAPI value must come from a form field
+    for category in items:
+        for item in category['items']: # Loops through each item within the current category
+            if item['name'] == item_name: # If the item's name macthes submitted form value
+                 # Updates item's count based on the action
+                if action == 'increment':
+                    item['count'] += 1 
+                elif action == 'decrement':
+                    item['count'] = max(0, item['count'] - 1)
+                
+                # Recalculates the total CO2 savings for the item using base_co2 as the fixed value and co2 as the updated total
+                item['co2'] = item['count'] * item['base_CO2']
+                break # Stops searching once the item is found and updates it
+
+    # Redirects back to homepage after form submission to display updated data & to prevent resubission on refresh
+    return RedirectResponse(url="/", status_code=303)
+
+# Route to reset all items locally
+@app.post("/reset", response_class=HTMLResponse)
+def renew(request: Request):
+    # Resets locally displayed items
+    for category in items:
+        for item in category['items']:
+            item['count'] = 0 # Resets local count to 0
+            item['co2'] = 0 # Resets local CO2 to 0  
+
+    return RedirectResponse(url="/", status_code=303) # Redirects back to demo page
+
+@app.get("/welcome", response_class=HTMLResponse)
 def root(request: Request, error: str = None,):
     # Initializes variable to store alert message
     alert = None
@@ -62,7 +114,7 @@ def root(request: Request, error: str = None,):
     return templates.TemplateResponse(request, "index.html", context)  # Renders the 'index.html' template with data from the context dictionary
 
 # Form Handling Route (Registration & Login)
-@app.post("/", response_class=HTMLResponse, )
+@app.post("/welcome", response_class=HTMLResponse, )
 def handle_form(
     name: Optional[str] = Form(None), 
     email: str = Form(...), 
@@ -73,26 +125,26 @@ def handle_form(
     # Handles registration form submission
     if action == 'register':
         if not name:
-            return RedirectResponse(url="/?error=missing_name", status_code=303) # RedirectS with error code in URL, if name is missing 
+            return RedirectResponse(url="/welcome?error=missing_name", status_code=303) # RedirectS with error code in URL, if name is missing 
         
         # Proceeds with registration
         user = Register(name=name, email=email) # Extracts data accordingly
         mongo.register_user(user) # Stores user data in Database
         EmailHandler.send_to_admin(user.name, user.email) # Notifies Admin of New Registrant
-        return RedirectResponse(url="/", status_code=303) # Redirects to back to landing page
+        return RedirectResponse(url="/", status_code=303) # Redirects to back to form page
     
     # Handles login form submission
     elif action == 'login':
         user = mongo.find_user_by_mail(email) # Fetch user info from Database
         if not user:
-            return RedirectResponse(url="/?error=user_not_found", status_code=303) # Redirects with error code in URL, if user not found
+            return RedirectResponse(url="/welcome?error=user_not_found", status_code=303) # Redirects with error code in URL, if user not found
         
         if not password:
-            return RedirectResponse(url="/?error=missing_password", status_code=303) # Redirects with error code in URL, if password is missing
+            return RedirectResponse(url="/welcome?error=missing_password", status_code=303) # Redirects with error code in URL, if password is missing
         
         hash_pwd = user.get("hash_pwd") # Gets hashed password then checks it for verficiation
         if not PWDHandler.verify_password(password, hash_pwd):
-            return RedirectResponse(url="/?error=incorrect_password", status_code=303)
+            return RedirectResponse(url="/welcome?error=incorrect_password", status_code=303)
         
         # Sets cookie with user_name
         response = RedirectResponse(url="/main", status_code=303) # Redirects to homepage if all checks out
@@ -107,7 +159,7 @@ def handle_form(
         return response
     
     else:
-        return RedirectResponse(url="/?error=invalid_action", status_code=303)  # Handles unknown form action
+        return RedirectResponse(url="/welcome?error=invalid_action", status_code=303)  # Handles unknown form action
 
 # Approval User Route 
 @app.get("/approve_user")
