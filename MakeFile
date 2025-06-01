@@ -1,0 +1,19 @@
+create:
+	@python -m venv CO2
+
+act:
+	@powershell -ExecutionPolicy Bypass -File ./CO2/Scripts/Activate.ps1
+
+install:
+	@CO2/Scripts/pip install -r requirements.txt
+	@CO2/Scripts/python.exe -m pip install --upgrade pip
+
+freeze:
+	@.\CO2\Scripts\python.exe -m pip freeze > requirements.txt
+
+start:
+	@uvicorn app.main:app --reload
+
+pytest:
+	@pytest tests/test_api.py
+	@pytest tests/test_crud.py
