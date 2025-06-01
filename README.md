@@ -19,49 +19,59 @@ This is the backend for the **YoungCaritas Kleidertausch CO₂ Savings Calculato
 - Admin UI: `/UI/admin`
 
 ---
-## 🔧 Environment Setup (Required First!)
+
+---
+### Environment Setup (Required First!)
 
 Before running the app (via Makefile or Docker), you **must create a `.env` file** in the project root:
 
 ### 1. Create `.env` file:
-# A: For Local Development (Makefile)
+## A: For Local Development (Makefile)
 DATABASE_URL=postgresql://admin:password@localhost:5432/spar_db
+
 JWT=your_jwt_secret
+
 ADMIN_EMAIL=your_admin_email@example.com
+
 SENDER_EMAIL=your_email@example.com
+
 EMAIL_PASSWORD=your_email_password
+
 POSTGRES_USER=admin
+
 POSTGRES_PASSWORD=password
+
 POSTGRES_DB=spar_db
 
-# B: For Docker Usage
+## B: For Docker Usage
 DATABASE_URL=postgresql://admin:password@db:5432/spar_db
 
 
-2. ## Generate a JWT Secret:
+2. ### Generate a JWT Secret:
 - cd config
 
 - Run: python generate_jwt_secret.py
 
 - Copy the output and paste it into the JWT field in your .env file.
+---
 
+---
+## Local Development Setup - Makefile Method
 
-### Local Development Setup - Makefile Method
+### Download and install Make first
 
-# Download and install Make first
-
-# 1. Clone the Repository
+### 1. Clone the Repository
 git clone https://github.com/Mustafa-Lutaaya/CO2_Spar_Rechner
 cd CO2-Spar-Rechner
 
-# 2. Setup Virtual Enviroment
+### 2. Setup Virtual Enviroment
 make create
 make act
 
-# 3.  Install Dependencies
+### 3.  Install Dependencies
 make install
 
-# 4.  Start the Server
+### 4.  Start the Server
 make start
 Visit http://localhost:8000 to access the system.
 
@@ -70,19 +80,21 @@ Visit http://localhost:8000 to access the system.
 Run tests with: make pytest
 
 ---
-### Docker Setup
+---
+## Docker Setup
 - You can also run the application using Docker.
 
-# 2.  Start Services
+### 1.  Start Services
 docker-compose up --build
 
-# 3. Access
+### 2. Access
 -App: http://localhost:8000
 
 -Swagger Docs: http://localhost:8000/docs
 
 -Admin UI: http://localhost:8000/UI/admin
-
+---
+---
 ### Tech Stack
 - Backend Framework: FastAPI 
 
@@ -105,6 +117,7 @@ docker-compose up --build
 - Testing: pytest — Unit and integration tests for API and database logic
 
 - API Documentation: Swagger UI (via FastAPI) — Auto-generated API docs available at /docs
+---
 
 ### Maintainers: 
 
