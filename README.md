@@ -93,9 +93,10 @@ docker-compose up --build
 
 - Secrets (Python): Used to generate secure JWT keys
 
-- Environment & Dependency Management: Makefile — For simple local automation (virtualenv setup, running server, tests)
+- Environment & Dependency Management:
+  Makefile — For simple local automation (virtualenv setup, running server, tests)
 
--Python virtualenv: Isolated environment for Python dependencies
+- Python virtualenv: Isolated environment for Python dependencies
 
 - DevOps / Containerization: Docker Containerized environment for the app and database
 
