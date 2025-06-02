@@ -5,13 +5,10 @@ act:
 	@powershell -ExecutionPolicy Bypass -File ./CO2/Scripts/Activate.ps1
 
 start:
-	@uvicorn app.main:app --reload
+	@uvicorn app.main:app --reload --port 5080
 
 run:
 	@python main.py
-
-test:
-	@pytest -v app/
 
 freeze:
 	@.\CO2\Scripts\python.exe -m pip freeze > requirements.txt

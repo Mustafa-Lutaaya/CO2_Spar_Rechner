@@ -1,5 +1,8 @@
 from operator import itemgetter # Sorts specific dictionary values by key.
 from datetime import datetime #  Used to get the current date and time
+from sqlalchemy.orm import Session
+from collections import defaultdict
+from models.models import CO2 # Imports CO2 model class
 
 class AppUtils:
     @staticmethod
@@ -50,3 +53,23 @@ class AppUtils:
             totals[key] = round(totals[key], 2)
 
         return totals, session_count
+    
+    @staticmethod
+    def get_data_grouped_by_category(db: Session):
+        items = db.query(CO2).all() # Fetches all CO2 records from the database
+        grouped = defaultdict(list) # Creates a dictionary where each key is a category and the value is a list of items
+
+        # Adds item details into the category group
+        for item in items:
+            grouped[item.category].append({
+                "name": item.name,
+                "base_co2": item.base_co2,
+                "count": 0, # Default count value
+                "co2": 0 # Default CO2 value
+            })
+        
+        # Converts the grouped dictionary into a list of dictionaries
+        return [
+            {"category": category, "items": items_list} 
+                for category, items_list in grouped.items()
+                ]

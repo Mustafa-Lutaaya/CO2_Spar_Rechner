@@ -4,7 +4,6 @@ import certifi # Imports the certifi library which is required by Atlas in terms
 from dotenv import load_dotenv # Loads secrets from .env.
 from datetime import datetime # Imports date time Library
 from pydantic import BaseModel, EmailStr, Field # Validates request body structure using schemas
-from config.mail_handler import EmailHandler
 
 load_dotenv()
 
@@ -27,12 +26,10 @@ class Co2:
             
             self.client = MongoClient(uri, tlsCAFile=certifi.where())  # Initializes the MongoClient to establish a connection to MongoDB
 
-            # Accesses the database and the co2, sos, pending_users, authorized_users collections plus Event Logs after sign out
+            # Accesses the database and the co2, sos, collections plus Event Logs after sign out
             self.db = self.client["YoungCaritas"]
             self.co2 = self.db["co2"]
             self.sos = self.db["sessions"] 
-            self.pen = self.db["pending_users"]
-            self.auth = self.db["authorized_users"]
             self.logs = self.db["Event_Logs"]
 
             print("Database Connected")
@@ -99,36 +96,6 @@ class Co2:
     def get_all_sessions(self):
         # Returns all session documents from the collection as a list
         return list(self.sos.find())
-    
-    def register_user(self, user:Register):
-        if user:
-            self.pen.insert_one(user.dict()) # Inserts the user data as a dictionary inside a document into the 'pending_users' collection
-            print("User Profile Pending")
-
-    def find_user_by_email(self, email: str):
-        # Searches the 'pending_users' collection for a document matching the user's email
-        user = self.pen.find_one({"email": email}) # Returns user data when found
-        if user:
-            return user
-        else:
-            print("User Not Found")
-            return None
-            
-    def find_user_by_mail(self, email: str):
-        # Searches the 'authorized_users' collection for a document matching the user's email
-        user = self.auth.find_one({"email": email}) # Returns user data when found
-        if user:
-            return user
-        else:
-            print("User Not Found")
-            return None
-    
-    def authenticate_user(self, auth_user):
-        self.auth.insert_one(auth_user) # Inserts approved user into 'authorized_users'
-    
-    def delete_user_by_email(self, email:str,):
-        result = self.pen.delete_one({"email": email})
-        return result.deleted_count # Returns 1 if deleted, 0 if not found
     
     def log_out(self, user, sessions, sorted_items, total):
         logs = {

@@ -1,26 +1,41 @@
 version: '3.8'
 
 services:
-  fastapi_app:
+  frontend:
     build: .
+    container_name: co2_frontend
     ports:
-      - "8000:8000"
-    env_file:
-      - .env
+      - "5080:5080"
     volumes:
       - .:/app
+    env_file:
+      - .env
     depends_on:
       - mongo
-    restart: always
+      - backend_postgres
 
   mongo:
-    image: mongo:6.0
-    container_name: mongo_container
+    image: mongo:7
+    container_name: co2_mongo
+    restart: always
     ports:
       - "27017:27017"
     volumes:
       - mongo_data:/data/db
+
+  backend_postgres:
+    image: postgres:15
+    container_name: co2_postgres
     restart: always
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - "5432:5432"
+    volumes:
+      - pg_data:/var/lib/postgresql/data
 
 volumes:
   mongo_data:
+  pg_data:
