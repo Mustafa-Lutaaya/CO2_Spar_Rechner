@@ -1,16 +1,12 @@
-### CO₂ Spar Rechner
----
-This is the backend for the **YoungCaritas Kleidertausch CO₂ Savings Calculator**, developed as a final semester project to improve the original system with:
+# CO₂ Spar Rechner
+This is the backend for the **YoungCaritas Kleidertausch CO₂ Savings Calculator**, developed as an end of semester final project to improve the original system with:
 
 -  A complete admin dashboard
 -  User registration & approval
 -  Persistent data saving via PostgreSQL
 -  A flexible CO₂ item management system
----
----
-### Features
----
 
+## Features
 - Admins can now:
   - Add, edit, or delete clothing items with CO₂ base values
   - Manage user registrations (approve/reject)
@@ -18,17 +14,13 @@ This is the backend for the **YoungCaritas Kleidertausch CO₂ Savings Calculato
 - Built with **FastAPI**, **PostgreSQL**, **Jinja2**, and **Docker**
 - Swagger UI for API exploration: `/docs`
 - Admin UI: `/UI/admin`
----
 
----
-### Environment Setup (Required First!)
----
-
+## Environment Setup (Required First!)
 Before running the app (via Makefile or Docker), you **must create a `.env` file** in the project root:
 
-### 1. Create `.env` file:
-
+## 1. Create `.env` file:
 ## A: For Local Development (Makefile)
+
 DATABASE_URL=postgresql://admin:password@localhost:5432/spar_db
 
 JWT=your_jwt_secret
@@ -48,60 +40,49 @@ POSTGRES_DB=spar_db
 ## B: For Docker Usage
 DATABASE_URL=postgresql://admin:password@db:5432/spar_db
 
-
-### 2. Generate a JWT Secret:
+## 2. Generate a JWT Secret:
 - cd config
 
 - Run: python generate_jwt_secret.py
 
 - Copy the output and paste it into the JWT field in your .env file.
 
+## LOCAL DEVELOPMENT SETUP - MAKEFILE METHOD
+-Download and install Make first
 
----
-### Local Development Setup - Makefile Method
----
-
-### Download and install Make first
-
-### 1. Clone the Repository
+## 1. Clone the Repository
 git clone https://github.com/Mustafa-Lutaaya/CO2_Spar_Rechner
 cd CO2-Spar-Rechner
 
-### 2. Setup Virtual Enviroment
+## 2. Setup Virtual Enviroment
 make create
 make act
 
-### 3.  Install Dependencies
+## 3.  Install Dependencies
 make install
 
-### 4.  Start the Server
+## 4.  Start the Server
 make start
 Visit http://localhost:8000 to access the system.
 
----
-### Testing 
----
+## TESTING
 Run tests with: make pytest
 
-
----
-### Docker Setup
----
+## DOCKER SETUP
 - You can also run the application using Docker.
 
-### 1.  Start Services
+## 1.  Start Services
 docker-compose up --build
 
-### 2. Access
+## 2. Access
 -App: http://localhost:8000
 
 -Swagger Docs: http://localhost:8000/docs
 
 -Admin UI: http://localhost:8000/UI/admin
 
----
-### Tech Stack
----
+
+## TECH STACK
 - Backend Framework: FastAPI 
 
 - Database: PostgreSQL — Relational database for storing users, items, and CO₂ values
@@ -124,7 +105,7 @@ docker-compose up --build
 
 - API Documentation: Swagger UI (via FastAPI) — Auto-generated API docs available at /docs
 
----
-### Maintainer: Mustafa Lutaaya
----
+
+## Maintainer: Mustafa Lutaaya
+
 
