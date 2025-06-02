@@ -5,7 +5,7 @@ act:
 	@powershell -ExecutionPolicy Bypass -File ./CO2/Scripts/Activate.ps1
 
 start:
-	@uvicorn app.main:app --reload --port 5080
+	@uvicorn app.main:app --reload --port 5000
 
 run:
 	@python main.py
