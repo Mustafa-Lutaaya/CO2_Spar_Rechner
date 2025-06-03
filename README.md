@@ -8,9 +8,9 @@ This is the backend for the **YoungCaritas Kleidertausch CO₂ Savings Calculato
 -  Persistent data saving via PostgreSQL
 -  A flexible CO₂ item management system
 
- _____________
-|### FEATURES |
- -------------
+ _________
+|FEATURES |
+ ---------
 - Admins can now:
   - Add, edit, or delete clothing items with CO₂ base values
   - Manage user registrations (approve/reject)
@@ -20,9 +20,9 @@ This is the backend for the **YoungCaritas Kleidertausch CO₂ Savings Calculato
 - Admin UI: `/UI/admin`
 
 
- __________
-|### SETUP |
- ----------
+ ___________
+|MAIN SETUP |
+ -----------
 ### 1. Clone the Repository
 git clone https://github.com/Mustafa-Lutaaya/CO2_Spar_Rechner
 cd CO2-Spar-Rechner
@@ -31,29 +31,29 @@ Before running the app (via Makefile or Docker), you **must create a `.env` file
 
 ### ". Create `.env` file:
 
- __________________________________
-|## .env File Structure / Contents |
- ----------------------------------
+ _______________________________
+|.env File Structure / Contents |
+ -------------------------------
 ___________________________________________________________
-# Common settings (used in both cases)                     |
-JWT=your_jwt_secret                                        |
-ADMIN_EMAIL=your_admin_email@example.com                   |
-SENDER_EMAIL=your_email@example.com                        |
-EMAIL_PASSWORD=your_email_password                         |
-                                                           |
-# Shared Postgres credentials                              |
-POSTGRES_USER=admin                                        |
-POSTGRES_PASSWORD=password                                 |
-POSTGRES_DB=spar_db                                        |
-                                                           |
-# DATABASE_URL differs based on usage:                     |
-                                                           |
-## A: For Local Development with Makefile or  localhost    | 
-DATABASE_URL=postgresql://admin:password@db:5432/spar_db   |
-                                                           |
-## B. For Docker Usage with docker compose up              |
-DATABASE_URL=postgresql://admin:password@db:5432/spar_db   |
-___________________________________________________________|
+# Common settings (used in both cases)                     
+JWT=your_jwt_secret                                        
+ADMIN_EMAIL=your_admin_email@example.com                   
+SENDER_EMAIL=your_email@example.com                        
+EMAIL_PASSWORD=your_email_password                         
+                                                           
+# Shared Postgres credentials                              
+POSTGRES_USER=admin                                        
+POSTGRES_PASSWORD=password                                 
+POSTGRES_DB=spar_db                                        
+                                                           
+# DATABASE_URL differs based on usage:                     
+                                                           
+## A: For Local Development with Makefile or  localhost     
+DATABASE_URL=postgresql://admin:password@db:5432/spar_db   
+                                                           
+## B. For Docker Usage with docker compose up              
+DATABASE_URL=postgresql://admin:password@db:5432/spar_db   
+___________________________________________________________
                                                     
 
 ### 2. Generate a JWT Secret:
@@ -63,9 +63,24 @@ ___________________________________________________________|
 
 - Copy the output and paste it into the JWT field in your .env file.
 
+ _________________
+|1.  Docker Setup |
+ -----------------
+- After replacing all .env file content;
 
- ______________________________________________
-|### Local Development Setup - Makefile Method |
+### 1.  Start Services
+In the terminal run; docker-compose up --build
+
+### 2. Access
+-App: http://localhost:8000
+
+-Swagger Docs: http://localhost:8000/docs
+
+-Admin UI: http://localhost:8000/UI/admin
+
+
+ _____________________________________________
+|2. Local Development Setup - Makefile Method |
  ----------------------------------------------
 - After replacing all .env file content;
 
@@ -82,31 +97,13 @@ make install
 make start
 Visit http://localhost:8000 to access the system.
 
----
-### Testing 
----
+ _________
+| TESTING |
+ ---------
 Run tests with: make pytest
-
- _________________
-|### Docker Setup |
- ------------------
-
-- After replacing all .env file content;
-
-### 1.  Start Services
-In the terminal run; docker-compose up --build
-
-### 2. Access
--App: http://localhost:8000
-
--Swagger Docs: http://localhost:8000/docs
-
--Admin UI: http://localhost:8000/UI/admin
-
-
- ________________
-|### Tech Stack  |
- ----------------
+ ____________
+|TECH STACK  |
+ ------------
 
 - Backend Framework: FastAPI 
 
@@ -130,9 +127,6 @@ In the terminal run; docker-compose up --build
 
 - API Documentation: Swagger UI (via FastAPI) — Auto-generated API docs available at /docs
 
-
 ____________________________
 MAINTAINER - MUSTAFA LUTAAYA
 ----------------------------
-
-
