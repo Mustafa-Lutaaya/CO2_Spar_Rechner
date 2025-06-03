@@ -23,9 +23,10 @@ cd CO2-Spar-Rechner
 #### NOTE: 
 1. Before running the app (via Makefile or Docker), you **must create a `.env` file** in the project root
 2.  If you're using local development (not Docker), make sure your PostgreSQL server is running and a database named spar_db exists.
+3. You can create it manually using: 
 
-i. You can create it manually using: 
 psql -U postgres
+
 CREATE DATABASE spar_db;
 
 #### 1.1 ". Create `.env` file:
