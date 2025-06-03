@@ -25,9 +25,9 @@ cd CO2-Spar-Rechner
 2.  If you're using local development (not Docker), make sure your PostgreSQL server is running and a database named spar_db exists.
 3. You can create it manually using: 
 
-psql -U postgres
+##### psql -U postgres
 
-CREATE DATABASE spar_db;
+##### CREATE DATABASE spar_db;
 
 #### 1.1 ". Create `.env` file:
 
@@ -41,8 +41,8 @@ CREATE DATABASE spar_db;
 7. POSTGRES_DB=spar_db                                        
 8. DATABASE_URL differs based on usage:    
 
-#### A: For Local Development with Makefile or  localhost     
-DATABASE_URL=postgresql://admin:password@db:5432/spar_db   
+#### A: For Local Development with Makefile or localhost     
+DATABASE_URL=postgresql://admin:password@localhost:5432/spar_db   
                                                            
 #### B. For Docker Usage with docker compose up              
 DATABASE_URL=postgresql://admin:password@db:5432/spar_db   
