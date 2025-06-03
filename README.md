@@ -1,6 +1,5 @@
- ______________________________________________
-|             CO2 SPAR RECHNER                 |
- ----------------------------------------------
+
+# CO2 SPAR RECHNER                 
 This is the backend for the **YoungCaritas Kleidertausch CO₂ Savings Calculator**, developed as a final semester project to improve the original system with:
 
 -  A complete admin dashboard
@@ -8,9 +7,8 @@ This is the backend for the **YoungCaritas Kleidertausch CO₂ Savings Calculato
 -  Persistent data saving via PostgreSQL
 -  A flexible CO₂ item management system
 
- _________
-|FEATURES |
- ---------
+ 
+#### FEATURES 
 - Admins can now:
   - Add, edit, or delete clothing items with CO₂ base values
   - Manage user registrations (approve/reject)
@@ -20,58 +18,58 @@ This is the backend for the **YoungCaritas Kleidertausch CO₂ Savings Calculato
 - Admin UI: `/UI/admin`
 
 
- ___________
-|MAIN SETUP |
- -----------
-### 1. Clone the Repository
+
+## MAIN SETUP
+#### 1.0 Clone the Repository
 git clone https://github.com/Mustafa-Lutaaya/CO2_Spar_Rechner
 cd CO2-Spar-Rechner
 
 Before running the app (via Makefile or Docker), you **must create a `.env` file** in the project root:
 
-### ". Create `.env` file:
 
- _______________________________
-|.env File Structure / Contents |
- -------------------------------
-___________________________________________________________
-# Common settings (used in both cases)                     
+
+#### 1.1 ". Create `.env` file:
+
+### .env File Structure / Contents 
+##### Common settings (used in both cases)                     
 JWT=your_jwt_secret                                        
 ADMIN_EMAIL=your_admin_email@example.com                   
 SENDER_EMAIL=your_email@example.com                        
 EMAIL_PASSWORD=your_email_password                         
                                                            
-# Shared Postgres credentials                              
+##### Shared Postgres credentials                              
 POSTGRES_USER=admin                                        
 POSTGRES_PASSWORD=password                                 
 POSTGRES_DB=spar_db                                        
                                                            
-# DATABASE_URL differs based on usage:                     
-                                                           
-## A: For Local Development with Makefile or  localhost     
+##### DATABASE_URL differs based on usage:                     
+                                                        
+#### A: For Local Development with Makefile or  localhost     
 DATABASE_URL=postgresql://admin:password@db:5432/spar_db   
                                                            
-## B. For Docker Usage with docker compose up              
+#### B. For Docker Usage with docker compose up              
 DATABASE_URL=postgresql://admin:password@db:5432/spar_db   
-___________________________________________________________
-                                                    
 
-### 2. Generate a JWT Secret:
+
+
+#### 1.2 Generate a JWT Secret:
 - cd config
 
 - Run: python generate_jwt_secret.py
 
 - Copy the output and paste it into the JWT field in your .env file.
 
- _________________
-|1.  Docker Setup |
- -----------------
+
+
+
+
+##  DOCKER SETUP
 - After replacing all .env file content;
 
-### 1.  Start Services
+#### i.  Start Services
 In the terminal run; docker-compose up --build
 
-### 2. Access
+#### ii. Access
 -App: http://localhost:8000
 
 -Swagger Docs: http://localhost:8000/docs
@@ -79,32 +77,34 @@ In the terminal run; docker-compose up --build
 -Admin UI: http://localhost:8000/UI/admin
 
 
- _____________________________________________
-|2. Local Development Setup - Makefile Method |
- ----------------------------------------------
+
+
+##  LOCAL DEVELOPMENT SETUP - MAKEFILE OR LOCALHOST
 - After replacing all .env file content;
 
-### 1.  Download and install Make first then copy the bin file path to the system variables on windows
+#### i.  Download and install Make first then copy the bin file path to the system variables on windows
 
-### 2. Setup Virtual Enviroment
+#### ii. Setup Virtual Enviroment
 make create
 make act
 
-### 3.  Install Dependencies
+#### iii.  Install Dependencies
 make install
 
-### 4.  Start the Server
+#### iv.  Start the Server
 make start
 Visit http://localhost:8000 to access the system.
 
- _________
-| TESTING |
- ---------
-Run tests with: make pytest
- ____________
-|TECH STACK  |
- ------------
 
+
+
+## TESTING 
+Run tests with: make pytest
+
+
+
+
+## TECH STACK  
 - Backend Framework: FastAPI 
 
 - Database: PostgreSQL — Relational database for storing users, items, and CO₂ values
