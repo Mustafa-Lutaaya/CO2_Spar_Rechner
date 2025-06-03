@@ -1,5 +1,3 @@
-version: '3.9'
-
 services:
   db:
     image: postgres:15
@@ -10,7 +8,6 @@ services:
       POSTGRES_DB: ${POSTGRES_DB}
     volumes:
       - pgdata:/var/lib/postgresql/data
-
     ports:
       - "5432:5432"
 
@@ -19,7 +16,7 @@ services:
     depends_on:
       - db
     environment:
-      DATABASE_URL: postgresql://admin:hakunamatata@db:5432/spar_db
+      DATABASE_URL: ${DATABASE_URL}
     ports:
       - "8000:8000"
     volumes:

@@ -1,16 +1,16 @@
-### CO₂ Spar Rechner
----
+ ______________________________________________
+|             CO2 SPAR RECHNER                 |
+ ----------------------------------------------
 This is the backend for the **YoungCaritas Kleidertausch CO₂ Savings Calculator**, developed as a final semester project to improve the original system with:
 
 -  A complete admin dashboard
 -  User registration & approval
 -  Persistent data saving via PostgreSQL
 -  A flexible CO₂ item management system
----
----
-### Features
----
 
+ _____________
+|### FEATURES |
+ -------------
 - Admins can now:
   - Add, edit, or delete clothing items with CO₂ base values
   - Manage user registrations (approve/reject)
@@ -18,36 +18,43 @@ This is the backend for the **YoungCaritas Kleidertausch CO₂ Savings Calculato
 - Built with **FastAPI**, **PostgreSQL**, **Jinja2**, and **Docker**
 - Swagger UI for API exploration: `/docs`
 - Admin UI: `/UI/admin`
----
 
----
-### Environment Setup (Required First!)
----
+
+ __________
+|### SETUP |
+ ----------
+### 1. Clone the Repository
+git clone https://github.com/Mustafa-Lutaaya/CO2_Spar_Rechner
+cd CO2-Spar-Rechner
 
 Before running the app (via Makefile or Docker), you **must create a `.env` file** in the project root:
 
-### 1. Create `.env` file:
+### ". Create `.env` file:
 
-## A: For Local Development (Makefile)
-DATABASE_URL=postgresql://admin:password@localhost:5432/spar_db
-
-JWT=your_jwt_secret
-
-ADMIN_EMAIL=your_admin_email@example.com
-
-SENDER_EMAIL=your_email@example.com
-
-EMAIL_PASSWORD=your_email_password
-
-POSTGRES_USER=admin
-
-POSTGRES_PASSWORD=password
-
-POSTGRES_DB=spar_db
-
-## B: For Docker Usage
-DATABASE_URL=postgresql://admin:password@db:5432/spar_db
-
+ __________________________________
+|## .env File Structure / Contents |
+ ----------------------------------
+___________________________________________________________
+# Common settings (used in both cases)                     |
+JWT=your_jwt_secret                                        |
+ADMIN_EMAIL=your_admin_email@example.com                   |
+SENDER_EMAIL=your_email@example.com                        |
+EMAIL_PASSWORD=your_email_password                         |
+                                                           |
+# Shared Postgres credentials                              |
+POSTGRES_USER=admin                                        |
+POSTGRES_PASSWORD=password                                 |
+POSTGRES_DB=spar_db                                        |
+                                                           |
+# DATABASE_URL differs based on usage:                     |
+                                                           |
+## A: For Local Development with Makefile or  localhost    | 
+DATABASE_URL=postgresql://admin:password@db:5432/spar_db   |
+                                                           |
+## B. For Docker Usage with docker compose up              |
+DATABASE_URL=postgresql://admin:password@db:5432/spar_db   |
+___________________________________________________________|
+                                                    
 
 ### 2. Generate a JWT Secret:
 - cd config
@@ -57,15 +64,12 @@ DATABASE_URL=postgresql://admin:password@db:5432/spar_db
 - Copy the output and paste it into the JWT field in your .env file.
 
 
----
-### Local Development Setup - Makefile Method
----
+ ______________________________________________
+|### Local Development Setup - Makefile Method |
+ ----------------------------------------------
+- After replacing all .env file content;
 
-### Download and install Make first
-
-### 1. Clone the Repository
-git clone https://github.com/Mustafa-Lutaaya/CO2_Spar_Rechner
-cd CO2-Spar-Rechner
+### 1.  Download and install Make first then copy the bin file path to the system variables on windows
 
 ### 2. Setup Virtual Enviroment
 make create
@@ -83,14 +87,14 @@ Visit http://localhost:8000 to access the system.
 ---
 Run tests with: make pytest
 
+ _________________
+|### Docker Setup |
+ ------------------
 
----
-### Docker Setup
----
-- You can also run the application using Docker.
+- After replacing all .env file content;
 
 ### 1.  Start Services
-docker-compose up --build
+In the terminal run; docker-compose up --build
 
 ### 2. Access
 -App: http://localhost:8000
@@ -99,9 +103,11 @@ docker-compose up --build
 
 -Admin UI: http://localhost:8000/UI/admin
 
----
-### Tech Stack
----
+
+ ________________
+|### Tech Stack  |
+ ----------------
+
 - Backend Framework: FastAPI 
 
 - Database: PostgreSQL — Relational database for storing users, items, and CO₂ values
@@ -114,7 +120,7 @@ docker-compose up --build
 
 - Environment & Dependency Management: Makefile — For simple local automation (virtualenv setup, running server, tests)
 
--Python virtualenv: Isolated environment for Python dependencies
+- Python virtualenv: Isolated environment for Python dependencies
 
 - DevOps / Containerization: Docker Containerized environment for the app and database
 
@@ -124,7 +130,9 @@ docker-compose up --build
 
 - API Documentation: Swagger UI (via FastAPI) — Auto-generated API docs available at /docs
 
----
-### Maintainer: Mustafa Lutaaya
----
+
+____________________________
+MAINTAINER - MUSTAFA LUTAAYA
+----------------------------
+
 
