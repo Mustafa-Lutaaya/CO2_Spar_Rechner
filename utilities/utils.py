@@ -1,22 +1,22 @@
 from operator import itemgetter # Sorts specific dictionary values by key.
 from datetime import datetime #  Used to get the current date and time
-from sqlalchemy.orm import Session
-from collections import defaultdict
-from models.models import CO2 # Imports CO2 model class
 
 class AppUtils:
+    # Method to returns current date & time in selected format
     @staticmethod
     def current_time():
-        return datetime.now().strftime('%Y-%m-%d %H:%M') # Returns current time in selected format
+        return datetime.now().strftime('%Y-%m-%d %H:%M') 
     
+    # Method to calculate CO2 equivalents for different modes of transport
     @staticmethod
-    def calculate_equivalents(total_co2):  # Calculates CO2 equivalents for different modes of transport
+    def calculate_equivalents(total_co2): 
         return{
             "wieauto": round(total_co2 / (170.65 / 1000), 2), # 0.2Kg CO2 per Km
             "wieflugzeug": round(total_co2 / (181.59 / 1000), 2), # 0.2Kg CO2 per Km
             "wiebus": round(total_co2 /(27.33 / 1000), 2) # 0.05Kg CO2 per Km
         }
     
+    # Method to flatten nested MongoDB documents into a list of item dictionaries for simplified rendering
     @staticmethod
     def rearrange_updated_items(co2_docs:list):
         rearranged = []
@@ -30,12 +30,14 @@ class AppUtils:
                     "count":item['count'],
                     "co2": item.get("co2",0)
                 })
-        return rearranged # Returns final list
-    
+        return rearranged 
+
+    # Method to flatten and sort the fetched uodated items by 'count in descending order
     @staticmethod
-    def sort_updated_items(updated_items): # Flattens and sorts items by 'count in descending order
-        return sorted(updated_items, key=itemgetter('count'), reverse=True) # Sorts the fetched updated items by 'count' in descending order
+    def sort_updated_items(updated_items): 
+        return sorted(updated_items, key=itemgetter('count'), reverse=True)
     
+    # Method to return calculated totals and session counts from documents
     @staticmethod
     def calculate_total(session_list):
         totals = {"ingesamt": 0, "wieauto": 0, "wieflugzeug": 0, "wiebus": 0}
@@ -53,23 +55,3 @@ class AppUtils:
             totals[key] = round(totals[key], 2)
 
         return totals, session_count
-    
-    @staticmethod
-    def get_data_grouped_by_category(db: Session):
-        items = db.query(CO2).all() # Fetches all CO2 records from the database
-        grouped = defaultdict(list) # Creates a dictionary where each key is a category and the value is a list of items
-
-        # Adds item details into the category group
-        for item in items:
-            grouped[item.category].append({
-                "name": item.name,
-                "base_co2": item.base_co2,
-                "count": 0, # Default count value
-                "co2": 0 # Default CO2 value
-            })
-        
-        # Converts the grouped dictionary into a list of dictionaries
-        return [
-            {"category": category, "items": items_list} 
-                for category, items_list in grouped.items()
-                ]
