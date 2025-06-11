@@ -6,6 +6,7 @@ from routes.ui_routes import router as ui_router  # Imports UI router instance f
 from routes.email_routes import router as email_router  # Imports Email router instance from the email_routes module and rename it as email_router
 from fastapi.templating import Jinja2Templates  # Imports Jinja2 template support
 from pathlib import Path # Provides object-oriented file system paths
+from fastapi.middleware.cors import CORSMiddleware # Imports CORS to enable communication beteween frontend and backend
 
 app = FastAPI(
     title="CO2 Spar Rechner",
@@ -24,3 +25,18 @@ app.include_router(email_router, prefix="/email", tags=["Email"])# Adds the User
 @app.get("/", response_class=HTMLResponse)
 def main_page(request: Request):
     return templates.TemplateResponse(request, "main.html") 
+
+# Domains allowed to make requests to the backend
+origins = [
+    "http://localhost:5000",   # Local dev server
+    "http://127.0.0.1:5000",
+]
+
+#CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,      # Allows requests from these origins
+    allow_credentials=True,     # Allows cookies and authentication headers
+    allow_methods=["*"],        # Allows all HTTP methods 
+    allow_headers=["*"],        # Allows all headers
+)

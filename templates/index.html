@@ -18,113 +18,132 @@
     <link href="/static/favicon.png" rel="icon">
 </head>
 <body>
-
     <!-- Bootstrap Alerts -->
-    {% if msg == "created" %}
-    <div class="alert alert-success alert-dismissible fade show" role="alert">
-        Item created successfully!
-    </div>
-    {% elif msg == "updated" %}
-    <div class="alert alert-info alert-dismissible fade show" role="alert">
-        Item updated successfully!
-    </div>
-    {% elif msg == "deleted" %}
-    <div class="alert alert-warning alert-dismissible fade show" role="alert">
-        Item deleted successfully!
-    </div>
-    {% elif msg == "exists" %}
-    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-        Item already exists!
-    </div>
-    {% elif msg == "notfound" %}
-    <div class="alert alert-dark alert-dismissible fade show" role="alert">
-        Item not found.
-    </div>
-    {% elif msg == "user_created" %}
-    <div class="alert alert-success alert-dismissible fade show" role="alert">
-      User registered successfully!
-    </div>
-    {% elif msg == "user_verified" %}
-    <div class="alert alert-success alert-dismissible fade show" role="alert">
-      User verified successfully!
-    </div>
-    {% elif msg == "user_rejected" %}
-    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-      User rejected.
-    </div>
-    {% elif msg == "user_notfound" %}
-    <div class="alert alert-warning alert-dismissible fade show" role="alert">
-      User not found.
-    </div>
-    {% endif %}
+     <div class="fixed-top">
+        <div class="row justify-content-center align-items-center">
+            {% if msg == "created" %}
+            <div class="alert alert-sm fs-15 alert-success alert-dismissible fade show" role="alert" style="max-width: 300px;">
+                Item created successfully!
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
 
-    {% if success %}
-    <div class="alert alert-success">{{ success }}</div>
-    {% endif %}
+            {% elif msg == "updated" %}
+            <div class="alert alert-sm fs-15 alert-info alert-dismissible fade show" role="alert" style="max-width: 300px;">
+                Item updated successfully!
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
 
+            {% elif msg == "deleted" %}
+            <div class="alert alert-sm fs-15 alert-warning alert-dismissible fade show" role="alert" style="max-width: 300px;">
+                Item deleted successfully!
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+
+            {% elif msg == "exists" %}
+            <div class="alert alert-sm fs-15 alert-danger alert-dismissible fade show" role="alert" style="max-width: 300px;">
+                Item already exists!
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+
+            {% elif msg == "notfound" %}
+            <div class="alert alert-sm fs-15 alert-dark alert-dismissible fade show" role="alert" style="max-width: 300px;">
+                Item not found.
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+
+            {% elif msg == "user_created" %}
+            <div class="alert alert-sm fs-15 alert-success alert-dismissible fade show" role="alert" style="max-width: 300px;">
+            User registered successfully!
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+
+            {% elif msg == "user_verified" %}
+            <div class="alert alert-sm fs-15 alert-success alert-dismissible fade show" role="alert" style="max-width: 300px;">
+            User verified successfully!
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+
+            {% elif msg == "user_rejected" %}
+            <div class="alert alert-sm fs-15 alert-danger alert-dismissible fade show" role="alert" style="max-width: 300px;">
+            User rejected.
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+
+            {% elif msg == "user_notfound" %}
+            <div class="alert alert-sm fs-15 alert-warning alert-dismissible fade show" role="alert" style="max-width: 300px;">
+            User not found.
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            {% endif %}
+
+            {% if success %}
+            <div class="alert alert-success">{{ success }}</div>
+            {% endif %}
+        </div>
+     </div>
+
+    <!-- To Spar Calculator -->
+    <div class="container mt-3">
+        <a href="http://localhost:5000/UI/main" class="btn btn-outline-success btn-sm">
+            To Spar Rechner
+        </a>
+    </div>
+
+    
     <!-- Logo Placement -->
     <div class="container mt-5 text-center text-danger">
         <div class="row align-items-center">
             <div class="col">
-                <img id="logo" class="logo" src="/static/recolored_logobg.png" alt="Logo">
+                <img id="logo" class="logo" src="/static/recolored_logobg.png" alt="Logo" width="300">
             </div>
         </div>
     </div>
 
     <!-- Title Placement -->
-    <div class="container mt-5 text-center text-success">
-        <h4><strong>CO₂-Emission Data</strong></h4>
+    <div class="container mt-3 text-center text-success">
+        <h3><strong>CO₂-Emission Data</strong></h3>
     </div>
 
-    <!-- Add Item Row -->
-    <div class="container mt-5">
-        <h6 class=" text-success"><strong>Add Item</strong></h6>  
+    <!-- Add Item -->
+    <div class="container mt-3">
+        <h5 class=" text-success"><strong>Add Item</strong></h5>  
         <div class="d-flex justify-content-start align-items-end gap-4 flex-wrap">
                 <form action="/UI/create" method="post" class="row g-2 align-items-end">
                     <div class="col-auto">
-                        <input type="text" name="category" placeholder="Category" class="form-control form-control-sm text-uppercase" required>
+                        <input type="text" name="category" placeholder="Category" class="form-control form-control-md text-uppercase" required>
                     </div>
                     <div class="col-auto">
-                        <input type="text" name="name" placeholder="Name" class="form-control form-control-sm" required>
+                        <input type="text" name="name" placeholder="Name" class="form-control form-control-md" required>
                     </div>
                     <div class="col-auto">
-                        <input type="number" step="0.01" name="base_co2" placeholder="Base CO₂" class="form-control form-control-sm" required>
+                        <input type="number" step="0.01" name="base_co2" placeholder="Base CO₂" class="form-control form-control-md" required>
                     </div>
                     <div class="col-auto">
-                        <button type="submit" class="btn btn-outline-success btn-sm">Create</button>
+                        <button type="submit" class="btn btn-outline-success btn-md">Create</button>
                     </div>
                 </form>
         </div>
     </div>
 
-    <!-- Delete Item Row -->
-    <div class="container mt-5">
-        <h6 class=" text-success"><strong>Search / Delete</strong></h6> 
+    <!-- Search Item Row -->
+    <div class="container mt-3">
+        <h5 class=" text-success"><strong>Search</strong></h5> 
         <div class="d-flex justify-content-start align-items-end gap-4 flex-wrap">
-                <!-- Delete Form -->
-                <form action="/UI/delete" method="post" class="row g-2 align-items-end">
-                    <div class="col-auto">
-                        <input type="text" name="name" placeholder="Item Name" class="form-control form-control-sm" required>
-                    </div>
-                    <div class="col-auto">
-                        <button type="submit" class="btn btn-outline-success btn-sm">Delete</button>
-                    </div>
-                </form> 
 
                 <!-- Search Form  -->
                 <form action="/UI/search" method="get" class="row g-2 align-items-end">
                     <div class="col-auto">
-                        <input type="text" name="name" placeholder="Search by name" class="form-control form-control-sm" required>
+                        <input type="text" name="name" placeholder="Search by name" class="form-control form-control-md" required>
                     </div>
                     <div class="col-auto">
-                        <button type="submit" class="btn btn-outline-success btn-sm">Search</button>
+                        <button type="submit" class="btn btn-outline-success btn-md">Search</button>
                     </div>
                 </form>
         </div>
     </div> 
 
    <!-- Item List Table -->
-    <div class="container mt-5">
+    <div class="container mt-3">
         <h3 class=" text-success text-center"><strong>ITEMS</strong></h3> 
         <table class="table table-striped table-bordered">
             <thead class="table-success text-center">
@@ -141,10 +160,15 @@
                     <td>{{ item.category }}</td>
                     <td>{{ item.name }}</td>
                     <td>{{ item.base_co2 }}</td>
-                    <td>
+                    <td class="text-center d-flex justify-content-center gap-4">
                         <button class="btn btn-sm btn-outline-success" data-bs-toggle="modal" data-bs-target="#updateModal{{ loop.index }}">
                             Edit
                         </button>
+                        <!-- Delete Form -->
+                        <form action="/UI/delete" method="post">
+                            <input type="hidden" name="name" value="{{ item.name }}" required>
+                            <button type="submit" class="btn btn-outline-danger btn-sm">Delete</button>
+                        </form> 
                     </td>
                 </tr>
                 {% endfor %}
@@ -162,7 +186,6 @@
                 <tr>
                     <th>Name</th>
                     <th>Email</th>
-                    <th>Password</th>
                     <th>Modify</th>
                 </tr>
             </thead>
@@ -171,7 +194,6 @@
                 <tr class="text-center">
                     <td>{{ con_user.name }}</td>
                     <td>{{ con_user.email }}</td>
-                     <td>{{ con_user.password[:5] }}</td>
                     <td>
                         <form method="post" action="/UI/delete_con">
                             <input type="hidden" name="email" value="{{ con_user.email }}">

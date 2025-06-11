@@ -39,7 +39,7 @@ def approve_user(request: Request, db: Session = Depends(get_db)):
         print(f"Error approving user: {e}")
         return RedirectResponse(url="/email/invalid_token", status_code=303) # Redirects to invalid token page if token is expired or invalid
     
-# Rejectionn User Route 
+# Rejection User Route 
 @router.get("/reject_user")
 def reject_user(request: Request, db: Session = Depends(get_db)):
 

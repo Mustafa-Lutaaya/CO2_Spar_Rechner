@@ -12,7 +12,7 @@ freeze:
 	@.\CO2\Scripts\python.exe -m pip freeze > requirements.txt
 
 start:
-	@uvicorn app.main:app --reload
+	@uvicorn app.main:app --reload --port 5050
 
 pytest:
 	@pytest tests/test_api.py
