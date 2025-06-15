@@ -16,8 +16,8 @@ class CRUD:
     # ITEM OPERATIONS
     # Function to get all items from the database with active database session as parameter
     def get_all_items(self, db: Session):
-        return db.query(CO2).all() # Queries the Table, retrieves all rows and returns them as a list of CO2 Item Objects
-
+        return db.query(CO2).order_by(CO2.category.asc(), CO2.name.asc()).all() # Queries the Table, retrieves all rows and returns them as a list of CO2 Item Objects then sorts the data 
+    
     # Function to get a single item by name with active database session and item_name as parameteres
     def get_itemby_name(self, db: Session,  name: str):
         return db.query(CO2).filter(CO2.name == name).first() # Queries the CO2 Item filtering rows where the Name Column matches the input name. first() returns the first matchin item or None if no match is found

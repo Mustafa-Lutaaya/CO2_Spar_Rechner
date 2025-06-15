@@ -19,7 +19,7 @@ class co2_itemread(co2_createitem):
 # USER SCHEMAS
 # Creates a class that inherits from BaseModel and determines the user model ensuring required fields of name and email are included and valid.
 class pen_user(BaseModel):
-    name: str = Field(..., min_length=4, max_length=10) # Ensures name is not an empty string
+    name: str = Field(..., min_length=4, max_length=20) # Ensures name is not an empty string
     email: EmailStr # Enforces email format
 
 # Creates a class that inherits from User Base and verifies a user ensuring required fields are present plus a password

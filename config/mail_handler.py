@@ -21,8 +21,8 @@ class EmailHandler:
         reject_token = JWTHandler.create_token(email=email, action="reject", name=name)
 
         # Constructs approval / rejection links
-        approval_url = f"http://127.0.0.1:8000/email/approve_user?token={approve_token}"
-        rejection_url = f"http://127.0.0.1:8000/email/reject_user?token={reject_token}"
+        approval_url = f"http://127.0.0.1:5050/email/approve_user?token={approve_token}"
+        rejection_url = f"http://127.0.0.1:5050/email/reject_user?token={reject_token}"
 
         # HTML Content 4 The Email
         html_content = f"""
@@ -72,7 +72,7 @@ class EmailHandler:
         <li>Code: {password}</li>
         </ul>
         <p>
-        <a href="http://127.0.0.1:8000/UI/admin" style="padding:10px;background-color:blue;color:white;text-decoration:none;">
+        <a href="http://127.0.0.1:5050/UI/admin" style="padding:10px;background-color:blue;color:white;text-decoration:none;">
         Login Now</a>
         </p>
         </body>

@@ -82,14 +82,33 @@
         </div>
      </div>
 
-    <!-- To Spar Calculator -->
+    <!-- To Spar Rechner -->
     <div class="container mt-3">
-        <a href="http://localhost:5000/UI/main" class="btn btn-outline-success btn-sm">
-            To Spar Rechner
-        </a>
+        <button type="button" class="btn btn-outline-success btn-sm text-black" data-bs-toggle="modal" data-bs-target="#sparModal">Spar-Rechner</button>
     </div>
 
-    
+    <!-- Exit Confirmation Modal -->
+    <div class="modal fade" id="sparModal" tabindex="-1" aria-labelledby="sparModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-sm-down">
+        <div class="modal-content">
+
+          <!-- Modal Header -->
+          <div class="modal-header bg-success text-center">
+            <h5 class="modal-title text-white" id="sparModalLabel">Proceed to the Spar Rechner?</h5>
+          </div>
+
+          <!-- Modal Footer -->
+          <div class="modal-footer bg-white">
+            <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">Cancel</button>
+            <a href="http://localhost:5000/UI/main" class="btn btn-outline-success btn-md">
+                Yes, Proceed.
+            </a>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
     <!-- Logo Placement -->
     <div class="container mt-5 text-center text-danger">
         <div class="row align-items-center">
@@ -161,21 +180,20 @@
                     <td>{{ item.name }}</td>
                     <td>{{ item.base_co2 }}</td>
                     <td class="text-center d-flex justify-content-center gap-4">
+                        <!-- Edit Button -->
                         <button class="btn btn-sm btn-outline-success" data-bs-toggle="modal" data-bs-target="#updateModal{{ loop.index }}">
                             Edit
                         </button>
-                        <!-- Delete Form -->
-                        <form action="/UI/delete" method="post">
-                            <input type="hidden" name="name" value="{{ item.name }}" required>
-                            <button type="submit" class="btn btn-outline-danger btn-sm">Delete</button>
-                        </form> 
+                        <!-- Delete Button -->
+                        <button type="button" class="btn btn-outline-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteModal{{ loop.index }}">
+                            Delete
+                        </button>
                     </td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
     </div>
-
     
     <!-- Verified Users List Table -->
     <div class="container mt-5">
@@ -197,7 +215,7 @@
                     <td>
                         <form method="post" action="/UI/delete_con">
                             <input type="hidden" name="email" value="{{ con_user.email }}">
-                            <button type="submit" class="btn btn-sm btn-outline-success" >
+                            <button type="submit" class="btn btn-sm btn-outline-danger" >
                                Delete
                             </button>
                         </form>
@@ -228,7 +246,7 @@
                     <td>
                         <form method="post" action="/UI/verify">
                             <input type="hidden" name="email" value="{{ pen_user.email }}">
-                             <button type="submit" class="btn btn-sm btn-outline-success" >
+                             <button type="submit" class="btn btn-sm btn-outline-success">
                                 Verify
                             </button>
                         </form>
@@ -236,7 +254,7 @@
                     <td>
                         <form method="post" action="/UI/delete_pen">
                             <input type="hidden" name="email" value="{{ pen_user.email }}">
-                            <button type="submit" class="btn btn-sm btn-outline-success" >
+                            <button type="submit" class="btn btn-sm btn-outline-success">
                                Delete
                             </button>
                         </form>
@@ -279,6 +297,31 @@
                         <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancel</button>
                     </div>
                 </form>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+
+    <!-- Delete Confirmation Modal -->
+    {% for item in items %}
+    <div class="modal fade" id="deleteModal{{ loop.index }}" tabindex="-1" aria-labelledby="deleteModalLabel{{ loop.index }}" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-sm-down">
+            <div class="modal-content">
+
+                <!-- Modal Header -->
+                <div class="modal-header bg-danger text-center">
+                    <h5 class="modal-title text-white" id="deleteModalLabel{{ loop.index }}">Delete {{ item.name }}?</h5>
+                </div>
+
+                <!-- Modal Footer -->
+                <div class="modal-footer bg-white">
+                    <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">Cancel</button>
+                        <form action="/UI/delete" method="post">
+                            <input type="hidden" name="name" value="{{ item.name }}" required>
+                            <button type="submit" class="btn btn-outline-danger btn-md">Delete</button>
+                        </form> 
+                </div>
+
             </div>
         </div>
     </div>
