@@ -43,5 +43,11 @@ docker-compose down -v
 docker-compose build --no-cache
 docker-compose up
 
-
+for category in grouped_items:
+    for item in category["items"]:
+        mongo.co2.update_one(
+            {"name": item["name"], "category": category["category"]},
+            {"$set": item},
+            upsert=True
+        )
 '''

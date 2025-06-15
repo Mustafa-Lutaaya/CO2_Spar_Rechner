@@ -42,19 +42,19 @@
     </div>
 
 
-   <!-- Heading Placement -->
+    <!-- Heading Placement -->
     <div class="container mt-1">
         <div class="row justify-content-center">
             <h5 class="text-center text-success"><strong>getauschte Kleidungsstücke</strong></h5>
 
-            <!-- Left Colummn -->
+            <!--Colummn 1-->
              <div class="col-md-3">
-                {% for category in items[:2] %}
+                <!-- UNTERTEILE SECTION -->
+                {% set category = items[0] %}
                 <br/>
                 <h5 class="text-center text-success"><strong>{{ category.category }}</strong></h5>
 
                 {% for item in category['items'] %}
-
                 <form method="post" class="m-0">
                 <div class="d-flex align-items-center text-success px-1 py-0 rounded shadow-sm mb-1" style="min-width: 50%;">
                     <!-- Decrement Button -->
@@ -73,17 +73,13 @@
                 </div>
                 </form>
                 {% endfor %}
-                {% endfor %}
-             </div>
 
-            <!-- Center Colummn -->
-             <div class="col-md-3">
-                {% for category in items[2:4] %}
+                <!-- OBERETILE SECTION -->
+                {% set category = items[1] %}
                 <br/>
                 <h5 class="text-center text-success"><strong>{{ category.category }}</strong></h5>
 
                 {% for item in category['items'] %}
-
                 <form method="post" class="m-0">
                 <div class="d-flex align-items-center text-success px-1 py-0 rounded shadow-sm mb-1" style="min-width: 50%;">
                     <!-- Decrement Button -->
@@ -93,28 +89,27 @@
                     <div class="flex-grow-1 text-center" style="white-space: nowrap;">
                         <h6><strong>{{ item['name'] }} : {{ item['co2'] }}</strong></h6> 
                      </div>
-                    
+
                     <!-- Hidden input to capture item name -->
-                    <input type="hidden" name="item_name" value="{{ item['name'] }}">
+                    <input type="hidden" name="item_name" value="{{ item['name']}}">
 
                     <!-- Increment Button -->
                     <button type="submit" name="action" value="increment" class="btn btn-outline-success btn-sm">+</button>
-                 </div>
+                </div>
                 </form>
-                {% endfor %}
                 {% endfor %}
              </div>
 
-            <!-- Right Colummn -->
+            <!--Colummn 2-->
              <div class="col-md-3">
-                {% for category in items[4:] %}
+                <!-- ACCESORIES SECTION -->
+                {% set category = items[2] %}
                 <br/>
-                <h5 class="text-center text-success "><strong>{{ category.category }}</strong></h5>
+                <h5 class="text-center text-success"><strong>{{ category.category }}</strong></h5>
 
                 {% for item in category['items'] %}
-
                 <form method="post" class="m-0">
-                <div class="d-flex align-items-center text-success px-1 py-0 rounded shadow-sm mb-1 py-0" style="min-width: 50%;">
+                <div class="d-flex align-items-center text-success px-1 py-0 rounded shadow-sm mb-1" style="min-width: 50%;">
                     <!-- Decrement Button -->
                     <button type="submit" name="action" value="decrement" class="btn btn-outline-success btn-sm">-</button>
 
@@ -124,13 +119,65 @@
                      </div>
 
                     <!-- Hidden input to capture item name -->
-                    <input type="hidden" name="item_name" value="{{ item['name'] }}">
+                    <input type="hidden" name="item_name" value="{{ item['name']}}">
 
                     <!-- Increment Button -->
                     <button type="submit" name="action" value="increment" class="btn btn-outline-success btn-sm">+</button>
                 </div>
                 </form>
                 {% endfor %}
+
+                <!-- JACKEN SECTION -->
+                {% set category = items[3] %}
+                <br/>
+                <h5 class="text-center text-success"><strong>{{ category.category }}</strong></h5>
+
+                {% for item in category['items'] %}
+                <form method="post" class="m-0">
+                <div class="d-flex align-items-center text-success px-1 py-0 rounded shadow-sm mb-1" style="min-width: 50%;">
+                    <!-- Decrement Button -->
+                    <button type="submit" name="action" value="decrement" class="btn btn-outline-success btn-sm">-</button>
+
+                    <!-- Item Name -->
+                    <div class="flex-grow-1 text-center" style="white-space: nowrap;">
+                        <h6><strong>{{ item['name'] }} : {{ item['co2'] }}</strong></h6> 
+                     </div>
+
+                    <!-- Hidden input to capture item name -->
+                    <input type="hidden" name="item_name" value="{{ item['name']}}">
+
+                    <!-- Increment Button -->
+                    <button type="submit" name="action" value="increment" class="btn btn-outline-success btn-sm">+</button>
+                </div>
+                </form>
+                {% endfor %}
+             </div>
+
+            <!-- Colummn 3 -->
+             <div class="col-md-3">
+                <!-- EINTEILER & SCHUHE SECTION -->
+                {% set category = items[4] %}
+                <br/>
+                <h5 class="text-center text-success"><strong>{{ category.category }}</strong></h5>
+
+                {% for item in category['items'] %}
+                <form method="post" class="m-0">
+                <div class="d-flex align-items-center text-success px-1 py-0 rounded shadow-sm mb-1" style="min-width: 50%;">
+                    <!-- Decrement Button -->
+                    <button type="submit" name="action" value="decrement" class="btn btn-outline-success btn-sm">-</button>
+
+                    <!-- Item Name -->
+                    <div class="flex-grow-1 text-center" style="white-space: nowrap;">
+                        <h6><strong>{{ item['name'] }} : {{ item['co2'] }}</strong></h6> 
+                     </div>
+
+                    <!-- Hidden input to capture item name -->
+                    <input type="hidden" name="item_name" value="{{ item['name']}}">
+
+                    <!-- Increment Button -->
+                    <button type="submit" name="action" value="increment" class="btn btn-outline-success btn-sm">+</button>
+                </div>
+                </form>
                 {% endfor %}
 
                 <!-- Personalization -->
@@ -169,10 +216,10 @@
                     </div>
 
                     <!-- Mean 4 -->
-                    <div class="d-flex align-items-center mb-2">
+                    <div class="d-flex align-items-center mb-5">
                     <div class="flex-grow-1 text-center " style="white-space: nowrap;">
                         <form action="/UI/reset" method="post" class="d-flex justify-content-center">
-                            <button type="submit" class="btn btn-outline-success btn-sm text-black">Sparen</button>
+                            <button type="submit" class="btn btn-outline-success btn-sm">Sparen</button>
                         </form>
                     </div>
                     </div>   

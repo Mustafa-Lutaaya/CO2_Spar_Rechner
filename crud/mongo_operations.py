@@ -23,10 +23,12 @@ class MongoCRUD:
                 "co2": 0 # Default CO2 value
             })
         
+        desired_order = ["UNTERTEILE", "OBERTEILE", "ACCESSORIES", "JACKEN", "EINTEILER & SCHUHE"]
         # Converts the grouped dictionary into a list of dictionaries
         return [
-            {"category": category, "items": items_list} 
-                for category, items_list in grouped.items()
+            {"category": category, "items": grouped[category]} 
+                for category in desired_order
+                if category in grouped
                 ]
     
     # Inserts grouped category-item data inzo the MongoDB 'co2' collection
