@@ -25,6 +25,7 @@ def demo_page():
 origins = [
     "http://localhost:5050",   # Local dev server
     "http://127.0.0.1:5050",
+    "https://co2-rechner.onrender.com"
 ]
 
 #CORS middleware
