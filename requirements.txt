@@ -9,6 +9,7 @@ dotenv==0.9.9
 ecdsa==0.19.1
 email_validator==2.2.0
 fastapi==0.115.12
+git-filter-repo==2.47.0
 greenlet==3.2.1
 h11==0.16.0
 idna==3.10
