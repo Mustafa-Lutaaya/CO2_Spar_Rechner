@@ -45,7 +45,7 @@ def root_redirect():
     if ENV == "prod":
         return RedirectResponse(url="https://co2-spar-rechner.onrender.com")
     else:
-        return RedirectResponse(url="http://localhost:5000")
+        return RedirectResponse(url="http://localhost:5000/UI")
 
 # Domains allowed to make requests to the backend
 origins = [
