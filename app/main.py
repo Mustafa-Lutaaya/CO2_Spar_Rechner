@@ -1,10 +1,13 @@
-from fastapi import FastAPI # Imports FastAPI class to create the main app instance
+from fastapi import FastAPI, Request # Imports FastAPI class to create the main app instance
 from fastapi.staticfiles import StaticFiles # Serves Static Files Like CSS, JS & Images
-from fastapi.responses import RedirectResponse  # For returning HTML content in the welcome route
+from fastapi.responses import RedirectResponse, HTMLResponse  # For returning HTML content in the welcome route
 from routes.ui_routes import router as ui_router  # Imports UI router instance from the ui_routes module and rename it as ui_router
 from fastapi.templating import Jinja2Templates  # Imports Jinja2 template support
 from pathlib import Path # Provides object-oriented file system paths
 from fastapi.middleware.cors import CORSMiddleware # Imports CORS to enable communication beteween frontend and backend
+from crud.sync_operations import sync_cloud_to_local, sync_local_to_cloud
+from database.data import Co2
+import os
 
 app = FastAPI(
     title="CO2 Spar Rechner",
@@ -17,9 +20,34 @@ templates = Jinja2Templates(directory=Path(__file__).parent.parent/"templates") 
 
 app.include_router(ui_router, prefix="/UI", tags=["UI"])# Adds the User Interaction router to the main app, prefixing all its routes with "/UI" meaning every path inside the UI_router will be available under "/UI". The tags parameter groups the routes under an UI tag in Swagger UI
 
-@app.get("/", response_class=RedirectResponse)
-def demo_page():
-    return RedirectResponse(url="/UI")
+ENV = os.getenv("ENV", "dev")
+if ENV not in ["dev", "prod"]:
+    raise ValueError("Invalid ENV setting. Must be 'dev' or 'prod'.")
+
+@app.on_event("startup")
+def sync_on_startup():
+    try:
+        cloud = Co2()
+        local = Co2()
+
+        if cloud.is_online:
+            sync_cloud_to_local(cloud.client, local.client)
+            sync_local_to_cloud(local.client, cloud.client)
+            print("MongoDB sync complete")
+        else:
+            print("Cloud not reachable. Skipping sync.")
+    except Exception as e:
+        print(f"Sync error: {e}")
+
+@app.get("/", response_class=HTMLResponse)
+def demo_page(request: Request):
+    if ENV == "dev":
+        base_url = "http://localhost:5000"
+    else:
+        base_url = "https://co2-spar-rechner.onrender.com"
+
+    return templates.TemplateResponse("demo.html",{"request": request, "base_url": base_url})  
+
 
 # Domains allowed to make requests to the backend
 origins = [

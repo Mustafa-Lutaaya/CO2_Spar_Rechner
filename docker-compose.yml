@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  co2-backend:
+    build: .
+    ports:
+      - "5000:5000"
+    env_file:
+      - .env
+      
+  db:
+    image: postgres:15
+    container_name: local_postgres_v2
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: Satire6Digits
+      POSTGRES_DB: postgres
+    ports:
+      - "5430:5430"
+
+  mongo:
+    image: mongo
+    container_name: local_mongo
+    ports:
+      - "27017:27017"
