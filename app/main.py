@@ -43,7 +43,7 @@ def sync_on_startup():
 @app.get("/", response_class=RedirectResponse)
 def root_redirect():
     if ENV == "prod":
-        return RedirectResponse(url="https://co2-spar-rechner.onrender.com")
+        return RedirectResponse(url="https://co2-spar-rechner.onrender.com/UI")
     else:
         return RedirectResponse(url="http://localhost:5000/UI")
 
