@@ -22,7 +22,7 @@
 
     <!-- Login Button -->
     <div class="container mt-3">
-        {% if 'localhost' in request.headers.get('host', '') %}
+        {% if env == "dev" %}
         <a href="http://localhost:5050" class="btn btn-outline-success btn-sm">
             Login to Admin
         </a>

@@ -41,16 +41,11 @@ def sync_on_startup():
         print(f"Sync error: {e}")
 
 @app.get("/", response_class=RedirectResponse)
-def root_redirect(request: Request):
-    host = request.headers.get("host", "")
-
-    if "localhost" in host:
-        base_url = "http://localhost:5000"
+def root_redirect():
+    if ENV == "prod":
+        return RedirectResponse(url="https://co2-spar-rechner.onrender.com")
     else:
-        base_url = "https://co2-spar-rechner.onrender.com"
-
-    return RedirectResponse(url=f"{base_url}/UI")  
-
+        return RedirectResponse(url="http://localhost:5000")
 
 # Domains allowed to make requests to the backend
 origins = [

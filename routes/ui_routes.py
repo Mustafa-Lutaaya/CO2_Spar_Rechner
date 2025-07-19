@@ -12,12 +12,15 @@ from database.data import SessionLocal, Base, engine, Co2 # Imports SQLAlchemy e
 from crud.local_operations import LocalCRUD
 from crud.mongo_operations import MongoCRUD
 from crud.sql_operations import SQLCRUD
+import os
 
 # Creates tables using SQLAlchemy
 Base.metadata.create_all(bind=engine)
 
 # Loads enviroment variables from .env file to retrieve sensitive data securely
 load_dotenv() # Loads secrets
+
+ENV = os.getenv("ENV", "dev")
 
 # Initializes FastAPI Web Application
 router = APIRouter()
@@ -58,6 +61,7 @@ def demo(request: Request):
     equivalents = AppUtils.calculate_equivalents(total_co2)  # Calculates how mmuch C02 is equivalent to driving a car, riding a bus or flying in a plane using the AppUtils calculate session function
 
     context = {
+        "env": ENV,
         "request": request, # Passes the request for Jinja2 to access
         "items": items,  # Passes items data to be rendered
         "equivalents": equivalents, # C02 equivalent in different modes of transport
