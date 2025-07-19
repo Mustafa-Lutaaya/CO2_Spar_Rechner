@@ -17,6 +17,8 @@
     <!-- Site Favicon Displayed In The Browser Tab -->
     <link href="/static/favicon.png" rel="icon">
 
+    <script src="https://unpkg.com/htmx.org@1.9.2"></script>
+
 </head>
 <body>
 
@@ -84,7 +86,11 @@
                 <h5 class="text-center text-success"><strong>{{ category.category }}</strong></h5>
 
                 {% for item in category['items'] %}
-                <form method="post" class="m-0">
+                <form method="post" 
+                    hx-post="/UI/main/hx-updatee" 
+                    hx-target="this" 
+                    hx-swap="outerHTML"  
+                    class="m-0">
                 <div class="d-flex align-items-center text-success px-1 py-0 rounded shadow-sm mb-1" style="min-width: 50%;">
                     <!-- Decrement Button -->
                     <button type="submit" name="action" value="decrement" class="btn btn-outline-success btn-sm">-</button>
@@ -109,7 +115,11 @@
                 <h5 class="text-center text-success"><strong>{{ category.category }}</strong></h5>
 
                 {% for item in category['items'] %}
-                <form method="post" class="m-0">
+                <form method="post" 
+                    hx-post="/UI/main/hx-updatee" 
+                    hx-target="this" 
+                    hx-swap="outerHTML"  
+                    class="m-0">
                 <div class="d-flex align-items-center text-success px-1 py-0 rounded shadow-sm mb-1" style="min-width: 50%;">
                     <!-- Decrement Button -->
                     <button type="submit" name="action" value="decrement" class="btn btn-outline-success btn-sm">-</button>
@@ -137,7 +147,11 @@
                 <h5 class="text-center text-success"><strong>{{ category.category }}</strong></h5>
 
                 {% for item in category['items'] %}
-                <form method="post" class="m-0">
+                <form method="post" 
+                    hx-post="/UI/main/hx-updatee" 
+                    hx-target="this" 
+                    hx-swap="outerHTML"
+                class="m-0">
                 <div class="d-flex align-items-center text-success px-1 py-0 rounded shadow-sm mb-1" style="min-width: 50%;">
                     <!-- Decrement Button -->
                     <button type="submit" name="action" value="decrement" class="btn btn-outline-success btn-sm">-</button>
@@ -162,7 +176,11 @@
                 <h5 class="text-center text-success"><strong>{{ category.category }}</strong></h5>
 
                 {% for item in category['items'] %}
-                <form method="post" class="m-0">
+                <form method="post" 
+                    hx-post="/UI/main/hx-updatee" 
+                    hx-target="this" 
+                    hx-swap="outerHTML"
+                    class="m-0">
                 <div class="d-flex align-items-center text-success px-1 py-0 rounded shadow-sm mb-1" style="min-width: 50%;">
                     <!-- Decrement Button -->
                     <button type="submit" name="action" value="decrement" class="btn btn-outline-success btn-sm">-</button>
@@ -190,7 +208,11 @@
                 <h5 class="text-center text-success"><strong>{{ category.category }}</strong></h5>
 
                 {% for item in category['items'] %}
-                <form method="post" class="m-0">
+                <form method="post" 
+                    hx-post="/UI/main/hx-updatee" 
+                    hx-target="this" 
+                    hx-swap="outerHTML"
+                    class="m-0">
                 <div class="d-flex align-items-center text-success px-1 py-0 rounded shadow-sm mb-1" style="min-width: 50%;">
                     <!-- Decrement Button -->
                     <button type="submit" name="action" value="decrement" class="btn btn-outline-success btn-sm">-</button>

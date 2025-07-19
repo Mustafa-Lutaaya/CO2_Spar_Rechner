@@ -77,6 +77,24 @@ def update_count(request: Request, action: str = Form(...), item_name: str = For
     local.update_item_count(items, item_name, action)
     return RedirectResponse(url="/", status_code=303) # Redirects back to homepage after form submission to display updated data & to prevent resubmission on refresh
 
+# Route to handle form submissions of incrementing & decrementing counts on demo page without reloads
+@router.post("/hx-update", response_class=HTMLResponse)
+def update_item_hx(request: Request, action: str = Form(...), item_name: str = Form(...)):
+    local.update_item_count(items, item_name, action) # Updates the in-memory count and CO2
+
+    # Loops through all categories and items 
+    for category in items:
+        for item in category['items']:
+            # Re-renders single item block as HTML once found
+            if item['name'] == item_name:
+                return templates.TemplateResponse("partials/item.html", {
+                    "request": request,
+                    "item": item,
+                    "hx_post_url": "/UI/hx-update"
+                })
+
+    return HTMLResponse(status_code=404, content="Item not found") # Returns a 404 response if none is found
+
 # Route to reset all items locally
 @router.post("/reset", response_class=HTMLResponse)
 def renew(request: Request):
@@ -116,9 +134,27 @@ def main(request: Request):
 
 # Route to handle form submissions of incrementing & decrementing counts
 @router.post("/main", response_class=HTMLResponse)
-def update_count(request: Request, action: str = Form(...), item_name: str = Form(...)): # request:Request accesses headers & cookies while the Form(...) tells FastAPI value must come from a form field
+def updatee_count(request: Request, action: str = Form(...), item_name: str = Form(...)): # request:Request accesses headers & cookies while the Form(...) tells FastAPI value must come from a form field
     local.update_item_count(items, item_name, action)
     return RedirectResponse(url="main", status_code=303)  # Redirects back to homepage after form submission to display updated data & to prevent resubission on refresh
+
+# Route to handle form submissions of incrementing & decrementing counts on demo page without reloads
+@router.post("/main/hx-updatee", response_class=HTMLResponse)
+def updatee_item_hx(request: Request, action: str = Form(...), item_name: str = Form(...)):
+    local.update_item_count(items, item_name, action) # Updates the in-memory count and CO2
+
+    # Loops through all categories and items 
+    for category in items:
+        for item in category['items']:
+            # Re-renders single item block as HTML once found
+            if item['name'] == item_name:
+                return templates.TemplateResponse("partials/item.html", {
+                    "request": request,
+                    "item": item,
+                    "hx_post_url": "/UI/main/hx-updatee"
+                })
+    return HTMLResponse(status_code=404, content="Item not found") # Returns a 404 response if none is found
+
 
 # Route to save items data to database and reset all items locally
 @router.post("/main/reset", response_class=HTMLResponse)
