@@ -41,8 +41,10 @@ def sync_on_startup():
         print(f"Sync error: {e}")
 
 @app.get("/", response_class=RedirectResponse)
-def root_redirect():
-    if ENV == "dev":
+def root_redirect(request: Request):
+    host = request.headers.get("host", "")
+
+    if "localhost" in host:
         base_url = "http://localhost:5000"
     else:
         base_url = "https://co2-spar-rechner.onrender.com"
