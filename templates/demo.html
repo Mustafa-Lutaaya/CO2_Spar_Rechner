@@ -22,9 +22,15 @@
 
     <!-- Login Button -->
     <div class="container mt-3">
-        <a href="{{ base_url }}" class="btn btn-outline-success btn-sm">
+        {% if 'localhost' in request.headers.get('host', '') %}
+        <a href="http://localhost:5050" class="btn btn-outline-success btn-sm">
             Login to Admin
         </a>
+        {% else %}
+        <a href="https://co2-rechner.onrender.com" class="btn btn-outline-success btn-sm">
+            Login to Admin
+        </a>
+        {% endif %}
     </div>
 
     <!-- Logo Placement -->

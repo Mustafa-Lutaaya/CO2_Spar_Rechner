@@ -20,6 +20,7 @@ templates = Jinja2Templates(directory=Path(__file__).parent.parent/"templates") 
 
 app.include_router(ui_router, prefix="/UI", tags=["UI"])# Adds the User Interaction router to the main app, prefixing all its routes with "/UI" meaning every path inside the UI_router will be available under "/UI". The tags parameter groups the routes under an UI tag in Swagger UI
 
+
 ENV = os.getenv("ENV", "dev")
 if ENV not in ["dev", "prod"]:
     raise ValueError("Invalid ENV setting. Must be 'dev' or 'prod'.")
@@ -39,14 +40,14 @@ def sync_on_startup():
     except Exception as e:
         print(f"Sync error: {e}")
 
-@app.get("/", response_class=HTMLResponse)
-def demo_page(request: Request):
+@app.get("/", response_class=RedirectResponse)
+def root_redirect():
     if ENV == "dev":
         base_url = "http://localhost:5000"
     else:
         base_url = "https://co2-spar-rechner.onrender.com"
 
-    return templates.TemplateResponse("demo.html",{"request": request, "base_url": base_url})  
+    return RedirectResponse(url=f"{base_url}/UI")  
 
 
 # Domains allowed to make requests to the backend
