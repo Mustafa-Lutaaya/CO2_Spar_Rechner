@@ -231,68 +231,16 @@
                 </form>
                 {% endfor %}
 
-                <!-- Personalization -->
-                 <div class="mt-1 text-center text-success">
-                    <br/>
-                    <h5><strong>Du hast gespart: </strong></h5>
-                    <h6><strong>{{ total_co2 }} kg CO₂</strong></h6>
-                    <h6><strong>Das ist so viel wie: </strong></h6>
-              
+               
+                <div id="personalization">
+                    {% include 'partials/personalization.html' %}
+                </div>
 
-                    <!-- Mean 1 -->
-                    <div class="d-flex align-items-center">
-                        <button class="btn btn-outline-white btn-md">🍀</button>
-                        <div class="flex-grow-1 text-center" style="white-space: nowrap;">
-                            <h6>{{ equivalents.wieauto }} km mit dem Auto</h6>
-                        </div>
-                        <button class="btn btn-outline-white btn-md">🍀</button>
-                    </div>
-
-                    <!-- Mean 2 -->
-                    <div class="d-flex align-items-center">
-                        <button class="btn btn-outline-white btn-md">🍀</button>
-                        <div class="flex-grow-1 text-center" style="white-space: nowrap;">
-                            <h6>{{ equivalents.wieflugzeug }} km mit dem Flugzeug</h6>
-                        </div>
-                        <button class="btn btn-outline-white btn-md">🍀</button>
-                    </div>
-
-                    <!-- Mean 3 -->
-                    <div class="d-flex align-items-center">
-                        <button class="btn btn-outline-white btn-md">🍀</button>
-                        <div class="flex-grow-1 text-center" style="white-space: nowrap;">
-                            <h6>{{ equivalents.wiebus }} km mit dem Bus</h6>
-                        </div>
-                        <button class="btn btn-outline-white btn-md">🍀</button>
-                    </div>
-
-                    <!-- Mean 4 -->
-                    <div class="d-flex align-items-center mb-5">
-                    <div class="flex-grow-1 text-center " style="white-space: nowrap;">
-                        <form action="/UI/main/reset" method="post" class="d-flex justify-content-center">
-                            <button type="submit" class="btn btn-outline-success btn-sm">Sparen</button>
-                        </form>
-                    </div>
-                    </div>   
-
-                 </div>
-             </div>
             
             <!-- Colummn 4 -->
             <div class="col-md-3">
-                <div class="d-flex align-items-center text-success " style="min-width: 80%;">
-                    <div class="flex-grow-1 text-center mb-2" style="white-space: nowrap;">
-                        <br/>
-                        <h5 class="text-center"><strong>GESAMTERSPARNIS:</strong></h5> 
-                        <h6><strong>{{ totals.ingesamt }} kg CO₂.</strong></h6> 
-                        <h6 ><strong>Das ist so viel wie:</strong></h6> 
-                        <h6 class="mt-3"><strong>{{ totals.wieauto }}</strong> km pro Reisende*r mit Auto</h6> 
-                        <h6 class="mt-3"><strong>{{ totals.wieflugzeug }}</strong> km pro Reisende*r mit Flugzeug</h6> 
-                        <h6 class="mt-3" ><strong>{{ totals.wiebus }}</strong> km pro Reisende*r mit Bus</h6> 
-                    </div>
+                 {% include 'partials/global_stats.html' %}
                 </div>
-
-
 
                 <div class="container mt-0 text-center">
                     <div class="row">

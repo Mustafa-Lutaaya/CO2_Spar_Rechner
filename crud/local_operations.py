@@ -22,3 +22,12 @@ class LocalCRUD:
             for item in category['items']:
                 item['count'] = 0 # Resets local count to 0
                 item['co2'] = 0  # Resets local CO2 to 0   
+
+               
+    @staticmethod
+    def calculate_user_total(items):
+        total = 0
+        for category in items:
+            for item in category['items']:
+                total += item.get('co2', 0) * item.get('count', 0)
+        return round(total, 2)

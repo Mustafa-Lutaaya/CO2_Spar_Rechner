@@ -80,20 +80,44 @@ def update_count(request: Request, action: str = Form(...), item_name: str = For
 # Route to handle form submissions of incrementing & decrementing counts on demo page without reloads
 @router.post("/hx-update", response_class=HTMLResponse)
 def update_item_hx(request: Request, action: str = Form(...), item_name: str = Form(...)):
+    global total_co2
     local.update_item_count(items, item_name, action) # Updates the in-memory count and CO2
 
     # Loops through all categories and items 
+    updated_item = None
     for category in items:
         for item in category['items']:
             # Re-renders single item block as HTML once found
             if item['name'] == item_name:
-                return templates.TemplateResponse("partials/item.html", {
-                    "request": request,
-                    "item": item,
-                    "hx_post_url": "/UI/hx-update"
-                })
+                updated_item = item
+                break
 
-    return HTMLResponse(status_code=404, content="Item not found") # Returns a 404 response if none is found
+    if updated_item is None:
+        return HTMLResponse(status_code=404, content="Item not found")
+    
+    total_co2 = sum(
+        (item.get('co2', 0))
+        for category in items
+        for item in category['items'])
+    
+    equivalents = AppUtils.calculate_equivalents(total_co2)
+
+    # Renders the updated item form partial
+    item_html = templates.get_template("partials/item.html").render({
+        "request": request,
+        "item": updated_item,
+        "hx_post_url": "/UI/hx-update"
+    })
+
+    # Renders the equivalents partial with OOB swap
+    equivalents_html = templates.get_template("partials/equivalents.html").render({
+        "request": request,
+        "total_co2": total_co2,
+        "equivalents": equivalents
+    })
+    
+    # Returns both concatenated
+    return HTMLResponse(content=item_html + equivalents_html)
 
 # Route to reset all items locally
 @router.post("/reset", response_class=HTMLResponse)
@@ -141,20 +165,44 @@ def updatee_count(request: Request, action: str = Form(...), item_name: str = Fo
 # Route to handle form submissions of incrementing & decrementing counts on demo page without reloads
 @router.post("/main/hx-updatee", response_class=HTMLResponse)
 def updatee_item_hx(request: Request, action: str = Form(...), item_name: str = Form(...)):
+    global total_co2 
+
     local.update_item_count(items, item_name, action) # Updates the in-memory count and CO2
 
     # Loops through all categories and items 
+    updated_item = None
     for category in items:
         for item in category['items']:
             # Re-renders single item block as HTML once found
             if item['name'] == item_name:
-                return templates.TemplateResponse("partials/item.html", {
-                    "request": request,
-                    "item": item,
-                    "hx_post_url": "/UI/main/hx-updatee"
-                })
-    return HTMLResponse(status_code=404, content="Item not found") # Returns a 404 response if none is found
-
+                updated_item = item
+                break
+    if updated_item is None:
+        return HTMLResponse(status_code=404, content="Item not found")
+    
+    # Recalculates derived stats
+    total_co2 = sum(
+        (item.get('co2', 0))
+        for category in items
+        for item in category['items'])
+    
+     
+    equivalents = AppUtils.calculate_equivalents(total_co2)  # Calculates how mmuch C02 is equivalent to driving a car, riding a bus or flying in a plane using the AppUtils calculate session function
+    totals, session_count = AppUtils.calculate_total(mongo.get_all_sessions()) # Gets All Sessions Function loops through all stored sessions in the Database, then passes them to AppUtils, calculates total function to calculate cumulative totals and number of sessions
+    updated_items = mongo.get_updated_items() # Fetches the latest items data from the MongoDB database
+    rearranged_items = AppUtils.rearrange_updated_items(updated_items)  # Single Lists MongoDB items
+    sorted_items = AppUtils.sort_updated_items(rearranged_items) # Sorts items by 'count' in descending order with most used items coming first
+    
+    return templates.TemplateResponse("partials/item_update_response.html", {
+            "request": request,
+            "item": updated_item,
+            "total_co2": total_co2,
+            "equivalents": equivalents,
+            "totals": totals,
+            "session_count": session_count,
+            "sorted_items": sorted_items,
+            "hx_post_url": "/UI/main/hx-updatee"
+        })
 
 # Route to save items data to database and reset all items locally
 @router.post("/main/reset", response_class=HTMLResponse)

@@ -53,11 +53,11 @@
 
     <!-- Heading Placement -->
     <div class="container mt-1">
-        <div class="row justify-content-center">
+        <div class="row justify-content-center g-3">
             <h5 class="text-center text-success"><strong>getauschte Kleidungsstücke</strong></h5>
 
             <!--Colummn 1-->
-             <div class="col-md-3">
+             <div class="col-12 col-md-3">
                 <!-- UNTERTEILE SECTION -->
                 {% set category = items[0] %}
                 <br/>
@@ -210,7 +210,7 @@
                 {% endfor %}
 
                 <!-- Personalization -->
-                 <div class="mt-1 text-center text-success">
+                 <div id="equivalents-section" class="mt-1 text-center text-success">
                     <br/>
                     <h5><strong>Du hast gespart: </strong></h5>
                     <h6><strong>{{ total_co2 }} kg CO₂</strong></h6>
