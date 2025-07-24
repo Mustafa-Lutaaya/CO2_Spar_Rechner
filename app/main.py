@@ -1,6 +1,6 @@
-from fastapi import FastAPI, Request # Imports FastAPI class to create the main app instance
+from fastapi import FastAPI# Imports FastAPI class to create the main app instance
 from fastapi.staticfiles import StaticFiles # Serves Static Files Like CSS, JS & Images
-from fastapi.responses import RedirectResponse, HTMLResponse  # For returning HTML content in the welcome route
+from fastapi.responses import RedirectResponse # For returning HTML content in the welcome route
 from routes.ui_routes import router as ui_router  # Imports UI router instance from the ui_routes module and rename it as ui_router
 from fastapi.templating import Jinja2Templates  # Imports Jinja2 template support
 from pathlib import Path # Provides object-oriented file system paths
@@ -46,7 +46,7 @@ def root_redirect():
         return RedirectResponse(url="https://co2-spar-rechner.onrender.com/UI")
     else:
         return RedirectResponse(url="http://localhost:5000/UI")
-
+    
 # Domains allowed to make requests to the backend
 origins = [
     "http://localhost:5050",   # Local dev server
